@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "663721322640",
+    "project_id": "chatapp-40332",
+    "storage_bucket": "chatapp-40332.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:663721322640:android:701634119eb3fa8f701015",
+        "android_client_info": {
+          "package_name": "com.example.authen_note_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "663721322640-j23dmr5qua0fc3s5jtn2vsr78fggvbsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqcN4X2mJba9TOqi0367uXvwWg2_PxR-g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "663721322640-j23dmr5qua0fc3s5jtn2vsr78fggvbsc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "663721322640-2i0eib3es1ql3lk2n1j8k8na747jt9nd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.authenNoteApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
