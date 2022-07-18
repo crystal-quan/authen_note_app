@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_is_empty
+
 import 'package:authen_note_app/edit_page/editor_page.dart';
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
 import 'package:authen_note_app/splash_page/splash_screen.dart';
@@ -90,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   previous.listNotes?.length != current.listNotes?.length,
               builder: (context, state) {
                 if (state.listNotes?.length != null) {
-                  if (state.listNotes?.length == 0) {
+                  if (state.listNotes!.length == 0) {
                     return SizedBox(
                         width: MediaQuery.of(context).size.width,
                         height: MediaQuery.of(context).size.height * 0.7,
@@ -109,12 +111,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   } else {
                     return SizedBox(
                       height: MediaQuery.of(context).size.height * 0.74,
-                      child: ListView.builder(
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) => const SizedBox(
+                          height: 20,
+                        ),
+                        padding: const EdgeInsets.all(20),
                         addAutomaticKeepAlives: true,
-                        //physics: ScrollPhysics(),
-                        // shrinkWrap: true,
-
-                        itemCount: state.listNotes?.length,
+                        itemCount: state.listNotes!.length,
                         itemBuilder: (context, index) {
                           return Slidable(
                             endActionPane: ActionPane(
@@ -142,6 +145,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   foregroundColor: Colors.white,
                                   icon: Icons.edit,
                                   label: 'Edit',
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
                                 ),
                                 SlidableAction(
                                   onPressed: (context) {
@@ -157,19 +162,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                   foregroundColor: Colors.white,
                                   icon: Icons.delete,
                                   label: 'Delete',
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
                                 ),
                               ],
                             ),
                             child: Container(
                               width: MediaQuery.of(context).size.width,
-
                               decoration: BoxDecoration(
                                   color: titleColor[index % 6],
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(10))),
-                              padding: const EdgeInsets.all(15),
-                              margin: const EdgeInsets.all(10),
-                              // width: MediaQuery.of(context).size.width,
+                              padding: const EdgeInsets.all(25),
                               child: Text(
                                 '${state.listNotes?[index].title}',
                                 style: const TextStyle(
@@ -182,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                 } else {
-                  return SplashScreen();
+                  return const SplashScreen();
                 }
               },
             )

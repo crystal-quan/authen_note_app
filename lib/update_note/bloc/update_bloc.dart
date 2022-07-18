@@ -8,7 +8,6 @@ part 'update_state.dart';
 
 class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
   UpdateBloc() : super(const UpdateState()) {
-
     on<EditTitle>(_onEditTitle);
     on<EditContent>(_onEditContent);
     on<ClickUpdate>(_onClickUpdate);
