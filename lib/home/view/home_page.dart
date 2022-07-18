@@ -6,7 +6,6 @@ import 'package:authen_note_app/widget/floatingActionButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../app/app.dart';
 import '../widgets/avatar.dart';
@@ -19,7 +18,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => HomeBloc(),
-      child: HomeScreen(),
+      child: const HomeScreen(),
     );
   }
 }
@@ -32,13 +31,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late HomeBloc _bloc;
   @override
   initState() {
     super.initState();
     // Add listeners to this class
     context.read<HomeBloc>().add(GetNote());
-    _bloc = HomeBloc();
   }
 
   @override
@@ -50,17 +47,17 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: backgroundColor2,
       floatingActionButton: CustomFloatingActionButtton(onPressed: () {
         return Navigator.push(
-            context, MaterialPageRoute(builder: (context) => EditorPage()));
+            context, MaterialPageRoute(builder: (context) => const EditorPage()));
       }),
       body: SafeArea(
-        minimum: EdgeInsets.symmetric(horizontal: 10),
+        minimum: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Notes',
                   style: TextStyle(fontSize: 40),
                 ),
@@ -84,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(' Hello', style: textTheme.headline6),
             const SizedBox(height: 4),
             Text(user.name ?? '', style: textTheme.headline5),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             BlocBuilder<HomeBloc, HomeState>(
@@ -103,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         return Slidable(
                           endActionPane: ActionPane(
-                            motion: DrawerMotion(),
+                            motion: const DrawerMotion(),
                             children: [
                               SlidableAction(
                                 // An action can be bigger than the others.
@@ -119,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               title: state
                                                   .listNotes![index].title)));
                                 },
-                                backgroundColor: Color(0xFF7BC043),
+                                backgroundColor: const Color(0xFF7BC043),
                                 foregroundColor: Colors.white,
                                 icon: Icons.edit,
                                 label: 'Edit',
@@ -130,9 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       id: state.listNotes![index].id
                                           .toString()));
                                   Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => HomePage()));
+                                      builder: (context) => const HomePage()));
                                 },
-                                backgroundColor: Color(0xFF0392CF),
+                                backgroundColor: const Color(0xFF0392CF),
                                 foregroundColor: Colors.white,
                                 icon: Icons.delete,
                                 label: 'Delete',
@@ -145,14 +142,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration: BoxDecoration(
                                 color: titleColor[index % 6],
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            padding: EdgeInsets.all(15),
-                            margin: EdgeInsets.all(10),
+                                    const BorderRadius.all(Radius.circular(10))),
+                            padding: const EdgeInsets.all(15),
+                            margin: const EdgeInsets.all(10),
                             // width: MediaQuery.of(context).size.width,
                             child: Text(
                               '${state.listNotes?[index].title}',
                               style:
-                                  TextStyle(fontSize: 30, color: Colors.black),
+                                  const TextStyle(fontSize: 30, color: Colors.black),
                             ),
                           ),
                         );

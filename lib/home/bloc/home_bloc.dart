@@ -3,16 +3,13 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
-import 'package:meta/meta.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc() : super(HomeState()) {
-    // on<HomeEvent>((event, emit) {
-    //   // TODO: implement event handler
-    // });
+  HomeBloc() : super(const HomeState()) {
+ 
     on<GetNote>(_onGetNote);
     on<Delete>(_onDelete);
   }
@@ -34,12 +31,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       notes = docRef.docs;
       List<Note> example = notes.map((e) {
-        print('quanbv-${notes.length}');
+       
         return e.data();
       }).toList();
 
       emit(state.copyWith(listNotes: example));
-      print(state.listNotes!.length);
+  
     }
 
     /// tương tự forEach

@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -11,14 +13,14 @@ class CustomButton extends StatelessWidget {
         alignment: Alignment.center,
         width: 60,
         height: 60,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(15)),
           color: Color(0xff3B3B3B),
         ),
         child: FittedBox(
           alignment: Alignment.center,
           child: InkWell(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
+            borderRadius: const BorderRadius.all(Radius.circular(15)),
             onTap: onTap,
             child: Image.asset(
               'assets/images/$imageAssets',

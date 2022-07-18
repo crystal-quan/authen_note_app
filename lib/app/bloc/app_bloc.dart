@@ -1,12 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:authen_note_app/modules/note_modules.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
 
 import 'package:flutter/foundation.dart';
 import 'package:very_good_analysis/very_good_analysis.dart';

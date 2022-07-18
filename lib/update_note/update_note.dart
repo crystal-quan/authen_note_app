@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable, use_build_context_synchronously
+
 import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/update_note/bloc/update_bloc.dart';
@@ -37,11 +39,11 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
     return Scaffold(
       backgroundColor: backgroundColor2,
       body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         child: SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 20),
+            minimum: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
@@ -58,20 +60,20 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               TextField(
                 minLines: 1,
                 maxLines: 4,
-                style: TextStyle(fontSize: 40, decoration: TextDecoration.none),
+                style: const TextStyle(
+                    fontSize: 40, decoration: TextDecoration.none),
                 cursorHeight: 48,
                 controller: TextEditingController(text: widget.title),
                 onChanged: (value) {
                   context.read<UpdateBloc>().add(EditTitle(value));
-                  print('title: $value');
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -80,19 +82,19 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
                     hintStyle:
                         TextStyle(color: Color(0xff9A9A9A), fontSize: 48)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               TextField(
                 controller: TextEditingController(text: widget.content),
                 maxLines: 18,
-                style: TextStyle(fontSize: 25, decoration: TextDecoration.none),
+                style: const TextStyle(
+                    fontSize: 25, decoration: TextDecoration.none),
                 cursorHeight: 25,
                 onChanged: (value) {
                   context.read<UpdateBloc>().add(EditContent(value));
-                  print(value);
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -114,19 +116,19 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
           return CupertinoAlertDialog(
             actions: [
               CupertinoDialogAction(
-                textStyle: TextStyle(fontSize: 40, color: Colors.red),
-                child: Text('Discard'),
+                textStyle: const TextStyle(fontSize: 40, color: Colors.red),
+                child: const Text('Discard'),
                 onPressed: () => Navigator.pop(context, false),
               ),
               CupertinoDialogAction(
-                textStyle: TextStyle(fontSize: 40, color: Colors.green),
-                child: Text('Save'),
+                textStyle: const TextStyle(fontSize: 40, color: Colors.green),
+                child: const Text('Save'),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
               ),
             ],
-            title: Text(
+            title: const Text(
               'Save changes ?',
               style: TextStyle(fontSize: 30),
             ),
@@ -140,7 +142,7 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => const HomePage(),
           ));
     }
   }

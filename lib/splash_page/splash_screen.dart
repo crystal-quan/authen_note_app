@@ -1,8 +1,6 @@
-// ignore_for_file: implementation_imports
+// ignore_for_file: implementation_imports, must_be_immutable
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:authen_note_app/app/app.dart';
-import 'package:authentication_repository/authentication_repository.dart';
 
 import 'package:flutter/material.dart';
 

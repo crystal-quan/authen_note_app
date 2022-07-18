@@ -23,7 +23,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
       backgroundColor: backgroundColor2,
       floatingActionButton: CustomFloatingActionButtton(onPressed: () {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EditorPage()));
+            MaterialPageRoute(builder: (context) => const EditorPage()));
       }),
       body: Stack(children: [
         Center(
@@ -40,6 +40,8 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
           ],
         )),
         Positioned(
+          top: 40,
+          width: MediaQuery.of(context).size.width,
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -54,7 +56,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                       LoginCubit(context.read<AuthenticationRepository>()),
                   child: BlocBuilder<LoginCubit, LoginState>(
                     builder: (context, state) {
-                      return Container(
+                      return SizedBox(
                         width: 50,
                         height: 50,
                         child: FittedBox(
@@ -72,8 +74,6 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
               ],
             ),
           ),
-          top: 40,
-          width: MediaQuery.of(context).size.width,
         )
       ]),
     );

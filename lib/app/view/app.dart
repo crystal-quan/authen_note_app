@@ -4,7 +4,6 @@ import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../theme.dart';
 import '../bloc/app_bloc.dart';
 import '../routes/routes.dart';
 
@@ -43,7 +42,7 @@ class AppView extends StatelessWidget {
       home: AnimatedSplashScreen(
           duration: 2500,
           splash: Icons.note_add,
-          nextScreen: BuildFirstScreen(),
+          nextScreen: const BuildFirstScreen(),
           splashTransition: SplashTransition.fadeTransition,
           backgroundColor: Colors.blue),
     );

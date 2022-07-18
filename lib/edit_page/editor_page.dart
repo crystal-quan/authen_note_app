@@ -1,11 +1,11 @@
-import 'package:authen_note_app/app/app.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:authen_note_app/edit_page/bloc/editor_bloc.dart';
 import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/widget/custom_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditorPage extends StatelessWidget {
@@ -15,7 +15,7 @@ class EditorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => EditorBloc(),
-      child: EditorView(),
+      child: const EditorView(),
     );
   }
 }
@@ -28,11 +28,11 @@ class EditorView extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor2,
       body: SingleChildScrollView(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         child: SafeArea(
-            minimum: EdgeInsets.symmetric(horizontal: 20),
+            minimum: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Row(
@@ -51,7 +51,7 @@ class EditorView extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               TextField(
@@ -60,9 +60,9 @@ class EditorView extends StatelessWidget {
                 },
                 minLines: 1,
                 maxLines: 4,
-                style: TextStyle(fontSize: 40, decoration: TextDecoration.none),
+                style: const TextStyle(fontSize: 40, decoration: TextDecoration.none),
                 cursorHeight: 48,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -72,17 +72,17 @@ class EditorView extends StatelessWidget {
                     hintStyle:
                         TextStyle(color: Color(0xff9A9A9A), fontSize: 48)),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               TextField(
                 maxLines: 18,
-                style: TextStyle(fontSize: 25, decoration: TextDecoration.none),
+                style: const TextStyle(fontSize: 25, decoration: TextDecoration.none),
                 cursorHeight: 25,
                 onChanged: (value) {
                   context.read<EditorBloc>().add(EditorContent(value));
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
@@ -104,19 +104,19 @@ class EditorView extends StatelessWidget {
           return CupertinoAlertDialog(
             actions: [
               CupertinoDialogAction(
-                textStyle: TextStyle(fontSize: 40, color: Colors.red),
-                child: Text('Discard'),
+                textStyle: const TextStyle(fontSize: 40, color: Colors.red),
+                child: const Text('Discard'),
                 onPressed: () => Navigator.pop(context, false),
               ),
               CupertinoDialogAction(
-                textStyle: TextStyle(fontSize: 40, color: Colors.green),
-                child: Text('Save'),
+                textStyle: const TextStyle(fontSize: 40, color: Colors.green),
+                child: const Text('Save'),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
               ),
             ],
-            title: Text(
+            title: const Text(
               'Save changes ?',
               style: TextStyle(fontSize: 30),
             ),
@@ -126,11 +126,11 @@ class EditorView extends StatelessWidget {
           );
         });
     if (result == true) {
-      context.read<EditorBloc>().add(SaveNote());
+      context.read<EditorBloc>().add(const SaveNote());
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => const HomePage(),
           ));
     }
   }

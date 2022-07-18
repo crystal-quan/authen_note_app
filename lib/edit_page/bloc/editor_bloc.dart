@@ -1,5 +1,3 @@
-import 'package:authen_note_app/modules/note_modules.dart';
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -10,9 +8,7 @@ part 'editor_state.dart';
 
 class EditorBloc extends Bloc<EditorEvent, EditorState> {
   EditorBloc() : super(EditorState()) {
-    // on<EditorEvent>((event, emit) {
-    //   // TODO: implement event handler
-    // });
+    
     on<EditorTitle>(_onEditorTitle);
     on<EditorContent>(_onEditorContent);
     on<SaveNote>(_onSaveNote);
@@ -26,9 +22,9 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
   }
 
   void _onSaveNote(SaveNote event, Emitter<EditorState> emit) async {
-    final currentUser = await FirebaseAuth.instance.currentUser;
+    final currentUser = FirebaseAuth.instance.currentUser;
 
-    final db = await FirebaseFirestore.instance;
+    final db = FirebaseFirestore.instance;
     final now = DateTime.now();
     String day = now.day.toString();
     String month = now.month.toString();
@@ -40,7 +36,7 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
       "content": state.content,
       "timeCreate": state.timeCreate,
     };
-    print(currentUser?.uid);
+
     if (currentUser?.uid != null) {
       final a = await db
           .collection("users")
@@ -48,7 +44,7 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
           .collection('notes')
           .add(note);
 
-      print(a.id);
+  
       await db
           .collection("users")
           .doc("${currentUser.email}")

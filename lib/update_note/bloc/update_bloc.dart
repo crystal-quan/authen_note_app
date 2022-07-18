@@ -1,18 +1,14 @@
-import 'package:authen_note_app/edit_page/bloc/editor_bloc.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 part 'update_event.dart';
 part 'update_state.dart';
 
 class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
-  UpdateBloc() : super(UpdateState()) {
-    // on<UpdateEvent>((event, emit) {
-    //   // TODO: implement event handler
-    // });
+  UpdateBloc() : super(const UpdateState()) {
+
     on<EditTitle>(_onEditTitle);
     on<EditContent>(_onEditContent);
     on<ClickUpdate>(_onClickUpdate);
