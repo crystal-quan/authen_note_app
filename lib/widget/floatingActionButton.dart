@@ -3,9 +3,6 @@
 import 'package:authen_note_app/theme/color.dart';
 import 'package:flutter/material.dart';
 
-
-
-
 class CustomFloatingActionButtton extends StatelessWidget {
   // ignore: prefer_typing_uninitialized_variables
   final onPressed;
@@ -18,6 +15,7 @@ class CustomFloatingActionButtton extends StatelessWidget {
       height: 70,
       child: FittedBox(
         child: FloatingActionButton(
+          foregroundColor: backgroundColor1,
           onPressed: onPressed,
           backgroundColor: backgroundColor1,
           child: const Icon(Icons.add, size: 50, color: Colors.white),

@@ -7,18 +7,17 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
+  Widget widget;
+  int s;
+  SplashScreen({super.key, required this.s,required this.widget});
 
   @override
   Widget build(BuildContext context) {
     return AnimatedSplashScreen(
-        duration: 2500,
+        duration: s,
         splash: Icons.note_add,
-        nextScreen: SizedBox(),
+        nextScreen: widget,
         splashTransition: SplashTransition.fadeTransition,
         backgroundColor: Colors.blue);
   }
 }
-
-

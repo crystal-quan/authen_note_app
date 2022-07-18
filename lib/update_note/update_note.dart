@@ -1,28 +1,37 @@
-import 'package:authen_note_app/app/app.dart';
-import 'package:authen_note_app/edit_page/bloc/editor_bloc.dart';
 import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/theme/color.dart';
+import 'package:authen_note_app/update_note/bloc/update_bloc.dart';
 import 'package:authen_note_app/widget/custom_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditorPage extends StatelessWidget {
-  const EditorPage({super.key});
+class UpdateNotePage extends StatelessWidget {
+  String? title;
+  String? content;
+  String? id;
+  UpdateNotePage({super.key, this.content, this.id, this.title});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => EditorBloc(),
-      child: EditorView(),
+      create: (context) => UpdateBloc(),
+      child: UpdateNoteView(content: content, id: id, title: title),
     );
   }
 }
 
-class EditorView extends StatelessWidget {
-  const EditorView({super.key});
+class UpdateNoteView extends StatefulWidget {
+  String? title;
+  String? content;
+  String? id;
+  UpdateNoteView({super.key, this.content, this.id, this.title});
 
+  @override
+  State<UpdateNoteView> createState() => _UpdateNoteViewState();
+}
+
+class _UpdateNoteViewState extends State<UpdateNoteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,10 +52,8 @@ class EditorView extends StatelessWidget {
                       onTap: () => Navigator.of(context).pop()),
                   CustomButton(
                     imageAssets: 'ic_save.png',
-                    onTap: () async {
+                    onTap: () {
                       _dialogBuilder(context);
-
-                      //context.read<EditorBloc>().add(SaveNote());
                     },
                   ),
                 ],
@@ -55,20 +62,21 @@ class EditorView extends StatelessWidget {
                 height: 20,
               ),
               TextField(
-                onChanged: (value) {
-                  context.read<EditorBloc>().add(EditorTitle(value));
-                },
                 minLines: 1,
                 maxLines: 4,
                 style: TextStyle(fontSize: 40, decoration: TextDecoration.none),
                 cursorHeight: 48,
+                controller: TextEditingController(text: widget.title),
+                onChanged: (value) {
+                  context.read<UpdateBloc>().add(EditTitle(value));
+                  print('title: $value');
+                },
                 decoration: InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     errorBorder: InputBorder.none,
                     disabledBorder: InputBorder.none,
-                    hintText: 'Title',
                     hintStyle:
                         TextStyle(color: Color(0xff9A9A9A), fontSize: 48)),
               ),
@@ -76,11 +84,13 @@ class EditorView extends StatelessWidget {
                 height: 20,
               ),
               TextField(
+                controller: TextEditingController(text: widget.content),
                 maxLines: 18,
                 style: TextStyle(fontSize: 25, decoration: TextDecoration.none),
                 cursorHeight: 25,
                 onChanged: (value) {
-                  context.read<EditorBloc>().add(EditorContent(value));
+                  context.read<UpdateBloc>().add(EditContent(value));
+                  print(value);
                 },
                 decoration: InputDecoration(
                     border: InputBorder.none,
@@ -126,7 +136,7 @@ class EditorView extends StatelessWidget {
           );
         });
     if (result == true) {
-      context.read<EditorBloc>().add(SaveNote());
+      context.read<UpdateBloc>().add(ClickUpdate(id: widget.id));
       Navigator.push(
           context,
           MaterialPageRoute(

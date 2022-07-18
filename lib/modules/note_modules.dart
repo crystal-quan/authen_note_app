@@ -1,14 +1,14 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class  Note {
-   Note({
+class Note {
+  Note({
+    required this.id,
     this.content,
     this.timeCreate,
     this.title,
   });
 
+  final String? id;
   final String? title;
   final String? content;
   final String? timeCreate;
@@ -19,6 +19,7 @@ class  Note {
   ) {
     final data = snapshot.data();
     return Note(
+      id: data?['note id'],
       content: data?['content'],
       title: data?['title'],
       timeCreate: data?['timeCreate'],
@@ -27,9 +28,10 @@ class  Note {
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (title != null) "name": title,
-      if (content != null) "state": content,
-      if (timeCreate != null) "country": timeCreate,
+      if (id != null) 'Null id': id,
+      if (title != null) "title": title,
+      if (content != null) "content": content,
+      if (timeCreate != null) "timeCreate": timeCreate,
     };
   }
 }

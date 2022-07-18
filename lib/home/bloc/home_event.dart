@@ -6,4 +6,12 @@ abstract class HomeEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
 class GetNote extends HomeEvent {}
+
+class Delete extends HomeEvent {
+  String id;
+  Delete({required this.id});
+  @override
+  List<Object> get props => [id];
+}

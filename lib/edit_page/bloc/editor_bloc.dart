@@ -34,7 +34,7 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
     String month = now.month.toString();
     String year = now.year.toString();
     emit(state.copywith(timeCreate: '$day-$month-$year'));
-    print(state.timeCreate);
+    
     final note = <String, dynamic>{
       "title": state.title,
       "content": state.content,
@@ -42,12 +42,19 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
     };
     print(currentUser?.uid);
     if (currentUser?.uid != null) {
-      await db
+      final a = await db
           .collection("users")
           .doc("${currentUser!.email}")
           .collection('notes')
           .add(note);
+
+      print(a.id);
+      await db
+          .collection("users")
+          .doc("${currentUser.email}")
+          .collection('notes')
+          .doc(a.id)
+          .set({'note id': a.id}, SetOptions(merge: true));
     }
-    
   }
 }
