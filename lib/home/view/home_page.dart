@@ -1,5 +1,6 @@
 import 'package:authen_note_app/edit_page/editor_page.dart';
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
+import 'package:authen_note_app/splash_page/splash_screen.dart';
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/update_note/update_note.dart';
 import 'package:authen_note_app/widget/floatingActionButton.dart';
@@ -46,8 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: backgroundColor2,
       floatingActionButton: CustomFloatingActionButtton(onPressed: () {
-        return Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const EditorPage()));
+        return Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const EditorPage()));
       }),
       body: SafeArea(
         minimum: const EdgeInsets.symmetric(horizontal: 10),
@@ -88,90 +89,100 @@ class _HomeScreenState extends State<HomeScreen> {
               buildWhen: (previous, current) =>
                   previous.listNotes?.length != current.listNotes?.length,
               builder: (context, state) {
-                if (state.listNotes?.isNotEmpty == true) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.74,
-                    child: ListView.builder(
-                      addAutomaticKeepAlives: true,
-                      //physics: ScrollPhysics(),
-                      // shrinkWrap: true,
-
-                      itemCount: state.listNotes?.length,
-                      itemBuilder: (context, index) {
-                        return Slidable(
-                          endActionPane: ActionPane(
-                            motion: const DrawerMotion(),
-                            children: [
-                              SlidableAction(
-                                // An action can be bigger than the others.
-
-                                onPressed: (context) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => UpdateNotePage(
-                                              content: state
-                                                  .listNotes![index].content,
-                                              id: state.listNotes![index].id,
-                                              title: state
-                                                  .listNotes![index].title)));
-                                },
-                                backgroundColor: const Color(0xFF7BC043),
-                                foregroundColor: Colors.white,
-                                icon: Icons.edit,
-                                label: 'Edit',
-                              ),
-                              SlidableAction(
-                                onPressed: (context) {
-                                  context.read<HomeBloc>().add(Delete(
-                                      id: state.listNotes![index].id
-                                          .toString()));
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => const HomePage()));
-                                },
-                                backgroundColor: const Color(0xFF0392CF),
-                                foregroundColor: Colors.white,
-                                icon: Icons.delete,
-                                label: 'Delete',
-                              ),
-                            ],
-                          ),
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-
-                            decoration: BoxDecoration(
-                                color: titleColor[index % 6],
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10))),
-                            padding: const EdgeInsets.all(15),
-                            margin: const EdgeInsets.all(10),
-                            // width: MediaQuery.of(context).size.width,
-                            child: Text(
-                              '${state.listNotes?[index].title}',
-                              style:
-                                  const TextStyle(fontSize: 30, color: Colors.black),
+                if (state.listNotes?.length != null) {
+                  if (state.listNotes?.length == 0) {
+                    return SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/ic_center_bg.png',
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
+                            const Text(
+                              'Create your first note !',
+                              style: TextStyle(fontSize: 20),
+                            )
+                          ],
+                        ));
+                  } else {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.74,
+                      child: ListView.builder(
+                        addAutomaticKeepAlives: true,
+                        //physics: ScrollPhysics(),
+                        // shrinkWrap: true,
+
+                        itemCount: state.listNotes?.length,
+                        itemBuilder: (context, index) {
+                          return Slidable(
+                            endActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+                              children: [
+                                SlidableAction(
+                                  // An action can be bigger than the others.
+
+                                  onPressed: (context) {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                UpdateNotePage(
+                                                    content: state
+                                                        .listNotes![index]
+                                                        .content,
+                                                    id: state
+                                                        .listNotes![index].id,
+                                                    title: state
+                                                        .listNotes![index]
+                                                        .title)));
+                                  },
+                                  backgroundColor: const Color(0xFF7BC043),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.edit,
+                                  label: 'Edit',
+                                ),
+                                SlidableAction(
+                                  onPressed: (context) {
+                                    context.read<HomeBloc>().add(Delete(
+                                        id: state.listNotes![index].id
+                                            .toString()));
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const HomePage()));
+                                  },
+                                  backgroundColor: const Color(0xFF0392CF),
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Delete',
+                                ),
+                              ],
+                            ),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+
+                              decoration: BoxDecoration(
+                                  color: titleColor[index % 6],
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10))),
+                              padding: const EdgeInsets.all(15),
+                              margin: const EdgeInsets.all(10),
+                              // width: MediaQuery.of(context).size.width,
+                              child: Text(
+                                '${state.listNotes?[index].title}',
+                                style: const TextStyle(
+                                    fontSize: 30, color: Colors.black),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
                 } else {
-                  return SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.7,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/ic_center_bg.png',
-                          ),
-                          const Text(
-                            'Create your first note !',
-                            style: TextStyle(fontSize: 20),
-                          )
-                        ],
-                      ));
+                  return SplashScreen();
                 }
               },
             )
