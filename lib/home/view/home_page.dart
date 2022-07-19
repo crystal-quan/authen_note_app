@@ -2,7 +2,8 @@
 
 import 'package:authen_note_app/edit_page/editor_page.dart';
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
-import 'package:authen_note_app/splash_page/splash_screen.dart';
+import 'package:authen_note_app/widget/loading_screen.dart';
+
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/update_note/update_note.dart';
 import 'package:authen_note_app/widget/floatingActionButton.dart';
@@ -186,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                 } else {
-                  return const SplashScreen();
+                  return const LoadingScreen();
                 }
               },
             )

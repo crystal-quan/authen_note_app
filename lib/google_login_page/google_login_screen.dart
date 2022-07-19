@@ -1,4 +1,5 @@
-import 'package:authen_note_app/google_login_page/login_cubit.dart';
+import 'package:authen_note_app/google_login_page/bloc/google_login_bloc.dart';
+
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/widget/floatingActionButton.dart';
 import 'package:authentication_repository/authentication_repository.dart';
@@ -53,8 +54,8 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                 ),
                 BlocProvider(
                   create: (_) =>
-                      LoginCubit(context.read<AuthenticationRepository>()),
-                  child: BlocBuilder<LoginCubit, LoginState>(
+                      GoogleLoginBloc(context.read<AuthenticationRepository>()),
+                  child: BlocBuilder<GoogleLoginBloc, GoogleLoginState>(
                     builder: (context, state) {
                       return SizedBox(
                         width: 50,
@@ -64,8 +65,9 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                           child: Image.asset(
                               'assets/images/ic_google_login.png',
                               fit: BoxFit.cover),
-                          onTap: () =>
-                              context.read<LoginCubit>().logInWithGoogle(),
+                          onTap: () => context
+                              .read<GoogleLoginBloc>()
+                              .add(LoginWithGoogle()),
                         )),
                       );
                     },

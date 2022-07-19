@@ -5,8 +5,8 @@ import 'package:authen_note_app/theme/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,10 +15,10 @@ class SplashScreen extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.5,
       alignment: Alignment.center,
       color: backgroundColor2,
-      child: const SpinKitCircle(
+      child: const SpinKitFadingCircle(
         duration: Duration(milliseconds: 500),
         color: Colors.white,
-        size: 50.0,
+        size: 60.0,
       ),
     );
   }

@@ -36,11 +36,10 @@ class AppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
       home: AnimatedSplashScreen(
-          duration: 2500,
+          duration: 1000,
           splash: Icons.note_add,
           nextScreen: const BuildFirstScreen(),
           splashTransition: SplashTransition.fadeTransition,
