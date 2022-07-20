@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class Note extends Equatable {
-  Note({
+  const Note({
     required this.id,
     this.content,
     this.timeCreate,

@@ -17,7 +17,7 @@ Future<void> main() {
         options: DefaultFirebaseOptions.currentPlatform,
       );
       await Hive.initFlutter();
-      await Hive.openBox('data');
+      await Hive.openBox('notes');
       final authenticationRepository = AuthenticationRepository();
       await authenticationRepository.user.first;
       runApp(App(authenticationRepository: authenticationRepository));
