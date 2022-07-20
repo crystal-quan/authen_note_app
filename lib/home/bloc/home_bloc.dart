@@ -1,4 +1,5 @@
 import 'package:authen_note_app/model/note_model.dart';
+import 'package:authen_note_app/repository/note_repository.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,7 +11,6 @@ part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc() : super(const HomeState()) {
- 
     on<GetNote>(_onGetNote);
     on<Delete>(_onDelete);
   }
@@ -19,36 +19,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   late List<QueryDocumentSnapshot<Note>> notes;
 
   void _onGetNote(GetNote event, Emitter<HomeState> emit) async {
-    if (currentUser?.email != null) {
-      final docRef = await db
-          .collection("users")
-          .doc(currentUser!.email)
-          .collection('notes')
-          .withConverter(
-            fromFirestore: Note.fromFirestore,
-            toFirestore: (Note note, _) => note.toFirestore(),
-          )
-          .get();
+    NoteRepository noteRepository = NoteRepository();
+    final example = await noteRepository.getNote();
 
-      notes = docRef.docs;
-      List<Note> example = notes.map((e) {
-       
-        return e.data();
-      }).toList();
-
-      emit(state.copyWith(listNotes: example));
-  
-    }
-
-    /// tương tự forEach
+    emit(state.copyWith(listNotes: example));
   }
 
+  /// tương tự forEach
+
   void _onDelete(Delete event, Emitter<HomeState> emit) async {
-    await db
-        .collection("users")
-        .doc(currentUser!.email)
-        .collection('notes')
-        .doc(event.id)
-        .delete();
+    await NoteRepository().deleteNote(event.id);
   }
 }

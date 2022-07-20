@@ -1,4 +1,3 @@
-
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,7 +28,6 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
     String month = now.month.toString();
     String year = now.year.toString();
     emit(state.copywith(timeCreate: '$day-$month-$year'));
-    return _noteRepository.addNote(
-        state.title, state.content, state.timeCreate);
+    _noteRepository.addNote(state.title, state.content, state.timeCreate);
   }
 }

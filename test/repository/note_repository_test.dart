@@ -1,18 +1,37 @@
+import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
+
+class MockNoteRepository extends Mock implements NoteRepository {}
 
 void main() async {
-  final firestore = FakeFirebaseFirestore();
+  late Note mockNote;
+  late NoteRepository? noteRepository;
+  late FakeFirebaseFirestore firestore;
+  late DocumentReference<Map<String, dynamic>> db;
   const mockEmail = 'crystalliu25081987@gmail.com';
   const mockId = 'randomString(15)';
-  const mockNote = <String, dynamic>{
-    'note id': '$mockId',
-    'title': 'My_title',
-    'content': 'My_content',
-    'timeCreate': 'DateTime.now()'
-  };
+  const mockTitle = 'Mock_title';
+  const mockcontent = 'Mock_content';
+  const mockTime = 'Mock_time';
+
+  setUp(
+    () {
+      noteRepository = MockNoteRepository();
+      firestore = FakeFirebaseFirestore();
+      mockNote = Note(
+          id: mockId,
+          title: mockTitle,
+          content: mockcontent,
+          timeCreate: mockTime);
+    },
+  );
+
   const expectedDumpAfterset = '''{
   "users": {
     "$mockEmail": {
@@ -27,50 +46,21 @@ void main() async {
     }
   }
 }''';
-  final db = firestore
-      .collection('users')
-      .doc(mockEmail)
-      .collection('notes')
-      .doc(mockId);
 
   test(
-    'set Note to fireStore return Firestore.dum()',
+    'add note',
     () async {
-      await db.set(mockNote);
-      expect(firestore.dump(), equals(expectedDumpAfterset));
+      print(noteRepository);
+     
+          await noteRepository?.addNote(mockTitle, mockcontent, mockTime);
+
+      // expect(
+      //     check,
+      //     equals(Note(
+      //         id: any(),
+      //         content: mockcontent,
+      //         title: mockTitle,
+      //         timeCreate: mockTime)));
     },
   );
-
-  test(
-    ' get Note from fireStore return mockNote',
-    () async {
-      final a = await db.get();
-      expect(a.data(), equals(mockNote));
-    },
-  );
-
-  test('Updates notes', () async {
-    await db.set(mockNote);
-
-    await db.update({
-      'timeUpdate': 'New_time',
-      'title': 'New_title',
-      'content': 'New_content',
-    });
-    expect((await db.get()).get('title'), equals('New_title'));
-    expect((await db.get()).get('content'), equals('New_content'));
-    expect((await db.get()).get('timeUpdate'), equals('New_time'));
-  });
-  test('Update fails on non-existent docs', () async {
-    final instance = FakeFirebaseFirestore();
-    expect(
-      instance
-          .collection('user')
-          .doc('newEmail')
-          .collection('notes')
-          .doc('NewID')
-          .update({'title': 'A'}),
-      throwsA(isA<FirebaseException>()),
-    );
-  });
 }
