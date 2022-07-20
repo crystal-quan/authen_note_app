@@ -6,13 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class LoadingScreen extends StatelessWidget {
-  const LoadingScreen({super.key});
+  final double? height;
+  const LoadingScreen({super.key, this.height});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.5,
+      height: height,
       alignment: Alignment.center,
       color: backgroundColor2,
       child: const SpinKitFadingCircle(

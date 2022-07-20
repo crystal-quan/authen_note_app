@@ -60,7 +60,8 @@ class EditorView extends StatelessWidget {
                 },
                 minLines: 1,
                 maxLines: 4,
-                style: const TextStyle(fontSize: 40, decoration: TextDecoration.none),
+                style: const TextStyle(
+                    fontSize: 40, decoration: TextDecoration.none),
                 cursorHeight: 48,
                 decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -77,7 +78,8 @@ class EditorView extends StatelessWidget {
               ),
               TextField(
                 maxLines: 18,
-                style: const TextStyle(fontSize: 25, decoration: TextDecoration.none),
+                style: const TextStyle(
+                    fontSize: 25, decoration: TextDecoration.none),
                 cursorHeight: 25,
                 onChanged: (value) {
                   context.read<EditorBloc>().add(EditorContent(value));
@@ -126,6 +128,7 @@ class EditorView extends StatelessWidget {
           );
         });
     if (result == true) {
+      FocusScope.of(context).unfocus();
       context.read<EditorBloc>().add(const SaveNote());
       Navigator.push(
           context,

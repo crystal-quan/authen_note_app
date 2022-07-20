@@ -96,7 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (state.listNotes!.length == 0) {
                     return SizedBox(
                         width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.7,
+                        height: (MediaQuery.of(context).size.height < 800.00)
+                            ? 350
+                            : MediaQuery.of(context).size.height * 0.7,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -111,7 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ));
                   } else {
                     return SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.74,
+                      height: (MediaQuery.of(context).size.height < 800.00)
+                          ? 350
+                          : MediaQuery.of(context).size.height * 0.74,
                       child: ListView.separated(
                         separatorBuilder: (context, index) => const SizedBox(
                           height: 20,
@@ -187,7 +191,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                 } else {
-                  return const LoadingScreen();
+                  return LoadingScreen(
+                    height: (MediaQuery.of(context).size.height < 900.00)
+                        ? 350
+                        : MediaQuery.of(context).size.height * 0.5,
+                  );
                 }
               },
             )

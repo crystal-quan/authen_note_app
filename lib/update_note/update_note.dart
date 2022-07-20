@@ -138,6 +138,7 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
           );
         });
     if (result == true) {
+      FocusScope.of(context).unfocus();
       context.read<UpdateBloc>().add(ClickUpdate(id: widget.id));
       Navigator.push(
           context,
