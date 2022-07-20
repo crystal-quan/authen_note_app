@@ -1,4 +1,5 @@
-import 'package:authen_note_app/modules/note_modules.dart';
+
+import 'package:authen_note_app/model/note_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

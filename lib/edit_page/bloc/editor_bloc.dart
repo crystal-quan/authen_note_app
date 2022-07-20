@@ -1,4 +1,5 @@
-import 'package:authen_note_app/note_repository/note_repository.dart';
+
+import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';

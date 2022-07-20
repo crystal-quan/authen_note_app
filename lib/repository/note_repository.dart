@@ -1,4 +1,3 @@
-import 'package:authen_note_app/modules/note_modules.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -38,12 +37,11 @@ class NoteRepository {
             .doc("${currentUser!.email}")
             .collection('notes')
             .add(data);
-      } 
-        Hive.box('notes').put(randomId, data);
-        final a = Hive.box('notes').get(randomId);
-        print('quanquan');
-        print(a.toString());
       }
+      Hive.box('notes').put(randomId, data);
+      final a = Hive.box('notes').get(randomId);
+      print('quanquan');
+      print(a.toString());
     } else {
       print('No internet :( Reason:');
     }
