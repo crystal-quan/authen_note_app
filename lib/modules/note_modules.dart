@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 
-class Note {
+class Note extends Equatable {
   Note({
     required this.id,
     this.content,
@@ -34,4 +35,8 @@ class Note {
       if (timeCreate != null) "timeCreate": timeCreate,
     };
   }
+  
+  @override
+  // TODO: implement props
+  List<Object?> get props => [id,timeCreate,content,title];
 }
