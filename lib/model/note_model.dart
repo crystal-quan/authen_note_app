@@ -2,17 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 class Note extends Equatable {
-  const Note({
+   Note({
     required this.id,
     this.content,
     this.timeCreate,
     this.title,
+    this.timeUpdate
   });
 
   final String? id;
   final String? title;
   final String? content;
   final String? timeCreate;
+  String? timeUpdate;
 
   factory Note.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -24,6 +26,7 @@ class Note extends Equatable {
       content: data?['content'],
       title: data?['title'],
       timeCreate: data?['timeCreate'],
+      timeUpdate:data?['timeUpdate'],
     );
   }
 
@@ -33,10 +36,11 @@ class Note extends Equatable {
       if (title != null) "title": title,
       if (content != null) "content": content,
       if (timeCreate != null) "timeCreate": timeCreate,
+      if (timeUpdate != null) "timeUpdate": timeUpdate,
     };
   }
-  
+
   @override
   // TODO: implement props
-  List<Object?> get props => [id,timeCreate,content,title];
+  List<Object?> get props => [id, timeCreate, content, title];
 }
