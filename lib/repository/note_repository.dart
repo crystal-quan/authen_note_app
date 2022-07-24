@@ -10,13 +10,19 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class NoteRepository {
-  final currentUser = FirebaseAuth.instance.currentUser;
+  NoteRepository({
+    required this.firestore,
+    required this.firebaseAuth,
+    required this.box,
+  });
+  FirebaseAuth firebaseAuth;
   late Note note;
-  late List<String> listId;
-  final box = Hive.box<HiveNote>('notes');
+  Box box;
+  // final box = Hive.box<HiveNote>('notes');
+  FirebaseFirestore firestore;
 
-  final db = FirebaseFirestore.instance;
-  Future<Note> addNote(String title, String content, String timeCreate) async {
+  addNote(String title, String content, String timeCreate) async {
+    final currentUser = firebaseAuth.currentUser;
     bool result = await InternetConnectionChecker().hasConnection;
 
     const chars =
@@ -34,9 +40,11 @@ class NoteRepository {
 
     print(randomId);
 
+    // return Note(id: 'a', content: 'b', title: 'c', timeCreate: 'd');
+
     if (result == true) {
       if (currentUser?.uid != null) {
-        final a = await db
+        await firestore
             .collection("users")
             .doc("${currentUser?.email}")
             .collection('notes')
@@ -48,7 +56,7 @@ class NoteRepository {
           'timeCreate': timeCreate
         });
 
-        final check = await db
+        final getOneNote = await firestore
             .collection('users')
             .doc(currentUser!.email)
             .collection('notes')
@@ -58,9 +66,9 @@ class NoteRepository {
               toFirestore: (Note note, _) => note.toFirestore(),
             )
             .get();
-        final s = check.data() as Note;
-        print(s);
-        return s;
+        final oneNote = getOneNote.data() as Note;
+        print(oneNote);
+        return oneNote;
       }
       HiveNote hiveNote = HiveNote(
           content: content, title: title, timeCreate: timeCreate, id: randomId);
@@ -68,37 +76,33 @@ class NoteRepository {
       await box.put(randomId, hiveNote);
       final read = box.get(randomId);
       Note kq = Note(
-          id: read?.id,
-          title: read?.title,
-          content: read?.content,
-          timeCreate: read?.timeCreate);
-      print('quanquan');
-      print(read);
+          id: read!.id,
+          title: read.title,
+          content: read.content,
+          timeCreate: read.timeCreate);
       return kq;
     } else {
       HiveNote hiveNote = HiveNote(
           content: content, title: title, timeCreate: timeCreate, id: randomId);
-      Map<String, HiveNote> map = {randomId: hiveNote};
       await box.put(randomId, hiveNote);
-      final read = box.get(randomId);
+      final read = await box.get(randomId);
       Note kq = Note(
-          id: read?.id,
-          title: read?.title,
-          content: read?.content,
-          timeCreate: read?.timeCreate);
-      print('quanquan');
-      print(kq.toString());
+          id: read!.id,
+          title: read.title,
+          content: read.content,
+          timeCreate: read.timeCreate);
       return kq;
     }
   }
 
   Future<bool> deleteNote(String id) async {
+    final currentUser = firebaseAuth.currentUser;
     late bool deleteComple;
     bool result = await InternetConnectionChecker().hasConnection;
 
     if (result == true) {
       if (currentUser?.email != null) {
-        await db
+        await firestore
             .collection("users")
             .doc("${currentUser!.email}")
             .collection('notes')
@@ -108,14 +112,10 @@ class NoteRepository {
 
         return deleteComple;
       }
-      final delete = await Hive.box('notes')
-          .delete(id)
-          .whenComplete(() => deleteComple = true);
+      await box.delete(id).whenComplete(() => deleteComple = true);
       return deleteComple;
     } else {
-      await Hive.box('notes,{key}')
-          .delete(id)
-          .whenComplete(() => deleteComple = true);
+      await box.delete(id).whenComplete(() => deleteComple = true);
       print(deleteComple.toString());
       return deleteComple;
     }
@@ -125,10 +125,11 @@ class NoteRepository {
       String id, String title, String content, String timeUpdate) async {
     bool result = await InternetConnectionChecker().hasConnection;
     late bool updateNote;
+    final currentUser = firebaseAuth.currentUser;
 
     if (result == true) {
       if (currentUser?.email != null) {
-        await db
+        await firestore
             .collection("users")
             .doc("${currentUser!.email}")
             .collection('notes')
@@ -138,6 +139,7 @@ class NoteRepository {
           'content': content,
           'timeUpdate': timeUpdate
         }).whenComplete(() => updateNote = true);
+        return updateNote;
       }
       HiveNote hiveNote = HiveNote(
           id: id, title: title, content: content, timeUpdate: timeUpdate);
@@ -154,12 +156,13 @@ class NoteRepository {
   }
 
   Future<List<Note>> getNote() async {
+    final currentUser = firebaseAuth.currentUser;
     bool result = await InternetConnectionChecker().hasConnection;
     late List<Note>? listNotes;
 
     if (result == true) {
       if (currentUser?.email != null) {
-        final listData = await db
+        final listData = await firestore
             .collection("users")
             .doc("${currentUser!.email}")
             .collection('notes')
@@ -173,42 +176,25 @@ class NoteRepository {
         await box.clear();
         return listNote;
       }
-      final hiveNot = await box.get('IxcvRxG3qK7DDlu');
+      final a = box.keys.toList();
+      final b = a.map((e) => e.toString()).toList();
 
-      // listNotes = hiveNot.map((e) {
-      //   Note note = Note(
-      //       id: e.id,
-      //       content: e.content,
-      //       title: e.title,
-      //       timeCreate: e.timeCreate,
-      //       timeUpdate: e.timeUpdate);
-      //   return note;
-      // }).toList();
-      Note notte = Note(
-          id: hiveNot?.id, title: hiveNot?.title, content: hiveNot?.content);
-      listNotes = [notte, notte];
-      print(listNotes.toString());
+      final c = b.map((e) {
+        final hivenotte = box.get(e);
+        Note notte = Note(
+            id: hivenotte!.id,
+            content: hivenotte.content,
+            title: hivenotte.title,
+            timeCreate: hivenotte.timeCreate);
+        return notte;
+      }).toList();
+      listNotes = c;
       return listNotes;
-      // final hiveNot = await box.values.map((e) => e).toList();
-
-      // listNotes = hiveNot.map((e) {
-      //   Note note = Note(
-      //       id: e.id,
-      //       content: e.content,
-      //       title: e.title,
-      //       timeCreate: e.timeCreate,
-      //       timeUpdate: e.timeUpdate);
-      //   return note;
-      // }).toList();
-      // return listNotes;
     } else {
       final a = box.keys.toList();
       final b = a.map((e) => e.toString()).toList();
-      print('key $b');
-      print(a.first);
-      final hivenotte = box.get(b.first);
-      final c = b.map((element) {
-        final hivenotte = box.get(element);
+      final c = b.map((e) {
+        final hivenotte = box.get(e);
         Note notte = Note(
             id: hivenotte!.id,
             content: hivenotte.content,

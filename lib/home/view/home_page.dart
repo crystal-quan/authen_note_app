@@ -140,8 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     content: state
                                                         .listNotes![index]
                                                         .content,
-                                                    id: state
-                                                        .listNotes![index].id,
+                                                    id: state.listNotes![index]
+                                                            .id,
                                                     title: state
                                                         .listNotes![index]
                                                         .title)));

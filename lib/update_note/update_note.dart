@@ -11,8 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class UpdateNotePage extends StatelessWidget {
   String? title;
   String? content;
-  String? id;
-  UpdateNotePage({super.key, this.content, this.id, this.title});
+  String id;
+  UpdateNotePage({super.key, this.content, required this.id, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +26,8 @@ class UpdateNotePage extends StatelessWidget {
 class UpdateNoteView extends StatefulWidget {
   String? title;
   String? content;
-  String? id;
-  UpdateNoteView({super.key, this.content, this.id, this.title});
+  String id;
+  UpdateNoteView({super.key, this.content, required this.id, this.title});
 
   @override
   State<UpdateNoteView> createState() => _UpdateNoteViewState();

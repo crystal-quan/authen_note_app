@@ -20,6 +20,6 @@ class EditContent extends UpdateEvent {
 }
 
 class ClickUpdate extends UpdateEvent {
-  String? id;
-  ClickUpdate({this.id});
+  String id;
+  ClickUpdate({required this.id});
 }

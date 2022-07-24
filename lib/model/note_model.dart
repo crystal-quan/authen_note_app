@@ -10,7 +10,7 @@ class Note extends Equatable {
     this.timeUpdate
   });
 
-  final String? id;
+  final String id;
   final String? title;
   final String? content;
   final String? timeCreate;
