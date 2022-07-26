@@ -10,15 +10,9 @@ import 'package:hive_test/hive_test.dart';
 
 import 'package:mocktail/mocktail.dart';
 
-// class MockHiveInterface extends Mock implements HiveInterface {}
-
-// class MockHiveBox<HiveNote> extends Mock implements Box<HiveNote> {}
-
 class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
 
 void main() async {
-  // late MockHiveBox<HiveNote> mockHiveBox;
-  // late MockHiveInterface hiveInterface;
   late MockFirebaseAuth auth;
   late Note mockNote;
   late NoteRepository noteRepository;
@@ -62,11 +56,12 @@ void main() async {
     () async {
       print(noteRepository);
 
-      final a = await noteRepository.addNote(mockTitle, mockcontent, mockTime);
-      expect(a.id, isNotEmpty);
-      expect(a.title, mockTitle);
-      expect(a.content, mockcontent);
-      expect(a.timeCreate, mockTime);
+      final add =
+          await noteRepository.addNote(mockTitle, mockcontent, mockTime);
+      expect(add.id, isNotEmpty);
+      expect(add.title, mockTitle);
+      expect(add.content, mockcontent);
+      expect(add.timeCreate, mockTime);
     },
   );
 

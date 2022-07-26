@@ -14,21 +14,16 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc() : super(const HomeState()) {
+  HomeBloc({required this.noteRepository}) : super(const HomeState()){
     on<GetNote>(_onGetNote);
     on<Delete>(_onDelete);
   }
-  NoteRepository noteRepository = NoteRepository(
-    firestore: FirebaseFirestore.instance,
-    firebaseAuth: FirebaseAuth.instance,
-     box: Hive.box<HiveNote>('notes'),
-  );
+  NoteRepository? noteRepository;
   late List<QueryDocumentSnapshot<Note>> notes;
 
   void _onGetNote(GetNote event, Emitter<HomeState> emit) async {
-    // NoteRepository noteRepository = NoteRepository(
-    //     firestore: FirebaseFirestore.instance, firebaseAuth: FirebaseAuth.instance,box:  Hive.box<HiveNote>('notes'));
-    final example = await noteRepository.getNote();
+    
+    final example = await noteRepository?.getNote();
 
     emit(state.copyWith(listNotes: example));
   }
@@ -36,6 +31,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   /// tương tự forEach
 
   void _onDelete(Delete event, Emitter<HomeState> emit) async {
-    await noteRepository.deleteNote(event.id);
+    await noteRepository?.deleteNote(event.id);
   }
 }

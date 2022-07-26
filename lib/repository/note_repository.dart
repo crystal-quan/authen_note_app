@@ -184,24 +184,24 @@ class NoteRepository {
       final c = b.map((e) {
         final hivenotte = box.get(e);
         Note notte = Note(
-            id: hivenotte!.id,
-            content: hivenotte.content,
-            title: hivenotte.title,
-            timeCreate: hivenotte.timeCreate);
+            id: hivenotte?.id ?? '',
+            content: hivenotte?.content,
+            title: hivenotte?.title,
+            timeCreate: hivenotte?.timeCreate);
         return notte;
       }).toList();
       listNotes = c;
       return listNotes;
     } else {
-      final a = box.keys.toList();
+      final a = await box.keys.toList();
       final b = a.map((e) => e.toString()).toList();
       final c = b.map((e) {
         final hivenotte = box.get(e);
         Note notte = Note(
-            id: hivenotte!.id,
-            content: hivenotte.content,
-            title: hivenotte.title,
-            timeCreate: hivenotte.timeCreate);
+            id: hivenotte?.id ?? '',
+            content: hivenotte?.content,
+            title: hivenotte?.title,
+            timeCreate: hivenotte?.timeCreate);
         return notte;
       }).toList();
       listNotes = c;
