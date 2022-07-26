@@ -30,7 +30,12 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
     String month = now.month.toString();
     String year = now.year.toString();
     emit(state.copywith(timeUpdate: '$day-$month-$year'));
-    NoteRepository _noteRepository = NoteRepository(firestore: FirebaseFirestore.instance,firebaseAuth: FirebaseAuth.instance,box: Hive.box<HiveNote>('notes'));
-    _noteRepository.updateNote(event.id, state.title, state.content, state.timeUpdate);
+    NoteRepository _noteRepository = NoteRepository(
+      firestore: FirebaseFirestore.instance,
+      firebaseAuth: FirebaseAuth.instance,
+       box: Hive.box<HiveNote>('notes'),
+    );
+    _noteRepository.updateNote(
+        event.id, state.title, state.content, state.timeUpdate);
   }
 }

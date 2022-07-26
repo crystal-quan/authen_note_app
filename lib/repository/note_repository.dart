@@ -17,11 +17,11 @@ class NoteRepository {
   });
   FirebaseAuth firebaseAuth;
   late Note note;
-  Box box;
-  // final box = Hive.box<HiveNote>('notes');
+  late Box<HiveNote> box;
+  //  final box = Hive.box<HiveNote>('notes');
   FirebaseFirestore firestore;
 
-  addNote(String title, String content, String timeCreate) async {
+  Future<Note> addNote(String title, String content, String timeCreate) async {
     final currentUser = firebaseAuth.currentUser;
     bool result = await InternetConnectionChecker().hasConnection;
 
@@ -66,7 +66,7 @@ class NoteRepository {
               toFirestore: (Note note, _) => note.toFirestore(),
             )
             .get();
-        final oneNote = getOneNote.data() as Note;
+        final oneNote = getOneNote.data() ?? Note();
         print(oneNote);
         return oneNote;
       }
@@ -80,6 +80,7 @@ class NoteRepository {
           title: read.title,
           content: read.content,
           timeCreate: read.timeCreate);
+      print(kq);
       return kq;
     } else {
       HiveNote hiveNote = HiveNote(
@@ -91,6 +92,7 @@ class NoteRepository {
           title: read.title,
           content: read.content,
           timeCreate: read.timeCreate);
+      print(kq);
       return kq;
     }
   }

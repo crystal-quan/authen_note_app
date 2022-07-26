@@ -12,9 +12,10 @@ part 'editor_state.dart';
 
 class EditorBloc extends Bloc<EditorEvent, EditorState> {
   NoteRepository noteRepository = NoteRepository(
-      firestore: FirebaseFirestore.instance,
-      firebaseAuth: FirebaseAuth.instance,
-      box: Hive.box<HiveNote>('notes'));
+    firestore: FirebaseFirestore.instance,
+    firebaseAuth: FirebaseAuth.instance,
+    box: Hive.box<HiveNote>('notes'),
+  );
   EditorBloc() : super(EditorState()) {
     on<EditorTitle>(_onEditorTitle);
     on<EditorContent>(_onEditorContent);

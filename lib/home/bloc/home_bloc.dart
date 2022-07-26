@@ -19,7 +19,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<Delete>(_onDelete);
   }
   NoteRepository noteRepository = NoteRepository(
-        firestore: FirebaseFirestore.instance, firebaseAuth: FirebaseAuth.instance,box:  Hive.box<HiveNote>('notes'));
+    firestore: FirebaseFirestore.instance,
+    firebaseAuth: FirebaseAuth.instance,
+     box: Hive.box<HiveNote>('notes'),
+  );
   late List<QueryDocumentSnapshot<Note>> notes;
 
   void _onGetNote(GetNote event, Emitter<HomeState> emit) async {

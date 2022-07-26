@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 
 class Note extends Equatable {
    Note({
-    required this.id,
+    this.id = '',
     this.content,
     this.timeCreate,
     this.title,

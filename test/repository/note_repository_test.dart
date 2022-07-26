@@ -5,19 +5,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_test/hive_test.dart';
 
 import 'package:mocktail/mocktail.dart';
 
-class MockHiveInterface extends Mock implements HiveInterface {}
+// class MockHiveInterface extends Mock implements HiveInterface {}
 
-class MockHiveBox extends Mock implements Box<HiveNote> {}
+// class MockHiveBox<HiveNote> extends Mock implements Box<HiveNote> {}
 
 class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
 
 void main() async {
-  late MockHiveBox mockHiveBox;
-  late MockHiveInterface hiveInterface;
+  // late MockHiveBox<HiveNote> mockHiveBox;
+  // late MockHiveInterface hiveInterface;
   late MockFirebaseAuth auth;
   late Note mockNote;
   late NoteRepository noteRepository;
@@ -31,20 +32,22 @@ void main() async {
 
   setUp(
     () async {
-      hiveInterface = MockHiveInterface();
-      hiveInterface.init('./');
-      // hiveInterface.openBox('users');
+      Hive.registerAdapter(HiveNoteAdapter(), internal: true, override: true);
+      await setUpTestHive();
+      final box = await Hive.openBox<HiveNote>('notes-testing');
       MockUser user = MockUser(
           uid: '1234',
           email: 'crystal_quan@gmail.com',
           displayName: 'my_name',
           phoneNumber: '0987465132');
-      auth = MockFirebaseAuth(mockUser: user);
+      auth = MockFirebaseAuth(mockUser: user, signedIn: false);
       firestore = FakeFirebaseFirestore();
 
-      mockHiveBox = MockHiveBox();
       noteRepository = NoteRepository(
-          firestore: firestore, firebaseAuth: auth, box: mockHiveBox);
+        firestore: firestore,
+        firebaseAuth: auth,
+        box: box,
+      );
 
       mockNote = Note(
           id: mockId,
@@ -54,39 +57,59 @@ void main() async {
     },
   );
 
-//   const expectedDumpAfterset = '''{
-//   "users": {
-//     "$mockEmail": {
-//       "notes": {
-//         "$mockId": {
-//           "note id": "$mockId",
-//           "title": "My_title",
-//           "content": "My_content",
-//           "timeCreate": "DateTime.now()"
-//         }
-//       }
-//     }
-//   }
-// }''';
-
   test(
-    'add note',
+    'add note to Firestore',
     () async {
-      // noteRepository = NoteRepository(
-      //     firestore: firestore, firebaseAuth: auth, box: mockHiveBox);
       print(noteRepository);
 
       final a = await noteRepository.addNote(mockTitle, mockcontent, mockTime);
-      when(() => noteRepository.addNote(mockTitle, mockcontent, mockTime))
-          .thenReturn(mockNote);
-
-      // expect(
-      //     a,
-      //     equals(Note(
-      //         id: ,
-      //         content: mockcontent,
-      //         title: mockTitle,
-      //         timeCreate: mockTime)));
+      expect(a.id, isNotEmpty);
+      expect(a.title, mockTitle);
+      expect(a.content, mockcontent);
+      expect(a.timeCreate, mockTime);
     },
   );
+
+  test(
+    'add note to Hive_flutter',
+    () async {
+      //await auth.signOut;
+      print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
+
+      final add =
+          await noteRepository.addNote(mockTitle, mockcontent, mockTime);
+      expect(add.id, isNotEmpty);
+      expect(add.title, mockTitle);
+      expect(add.content, mockcontent);
+      expect(add.timeCreate, mockTime);
+    },
+  );
+
+  test(
+    'delete Note return true',
+    () async {
+      final delete = await noteRepository.deleteNote('');
+      expect(true, true);
+    },
+  );
+  test(
+    'Update Note return true',
+    () async {
+      final update = await noteRepository.updateNote(
+          '', 'newTitle', 'newContent', 'newTime');
+      expect(true, true);
+    },
+  );
+
+  test(
+    'Get Notes return List Note',
+    () async {
+      final getNotes = await noteRepository.getNote();
+      expect(getNotes, isList);
+    },
+  );
+
+  tearDown(() async {
+    await tearDownTestHive();
+  });
 }
