@@ -71,21 +71,6 @@ void main() async {
   );
 
   test(
-    'add note to Hive_flutter',
-    () async {
-      //await auth.signOut;
-      print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
-
-      final add =
-          await noteRepository.addNote(mockTitle, mockcontent, mockTime);
-      expect(add.id, isNotEmpty);
-      expect(add.title, mockTitle);
-      expect(add.content, mockcontent);
-      expect(add.timeCreate, mockTime);
-    },
-  );
-
-  test(
     'delete Note return true',
     () async {
       final delete = await noteRepository.deleteNote('');
@@ -104,6 +89,47 @@ void main() async {
   test(
     'Get Notes return List Note',
     () async {
+      final getNotes = await noteRepository.getNote();
+      expect(getNotes, isList);
+    },
+  );
+
+  test(
+    'add note to Hive_flutter',
+    () async {
+      await auth.signOut;
+      print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
+
+      final add =
+          await noteRepository.addNote(mockTitle, mockcontent, mockTime);
+      expect(add.id, isNotEmpty);
+      expect(add.title, mockTitle);
+      expect(add.content, mockcontent);
+      expect(add.timeCreate, mockTime);
+    },
+  );
+  test(
+    'delete Note from Hive return true',
+    () async {
+      print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
+      final delete = await noteRepository.deleteNote('');
+      expect(true, true);
+    },
+  );
+  test(
+    'Update Note from Hive return true',
+    () async {
+      print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
+      final update = await noteRepository.updateNote(
+          '', 'newTitle', 'newContent', 'newTime');
+      expect(true, true);
+    },
+  );
+
+  test(
+    'Get Notes from Hive return List Note',
+    () async {
+      print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
       final getNotes = await noteRepository.getNote();
       expect(getNotes, isList);
     },

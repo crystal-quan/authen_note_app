@@ -20,7 +20,7 @@ void main() {
     test('isEmpty returns true for empty Note id', () {
       final note = Note(id: '');
 
-      expect(note.id?.isEmpty, isTrue);
+      expect(note.id.isEmpty, isTrue);
       expect(note.content?.isEmpty, null);
       expect(note.title?.isEmpty, null);
       expect(note.timeCreate?.isEmpty, null);
@@ -29,7 +29,7 @@ void main() {
     test('isEmpty returns false for non-empty user', () {
       final note =
           Note(title: title, content: content, timeCreate: timeCreate, id: id);
-      expect(note.id?.isEmpty, isFalse);
+      expect(note.id.isEmpty, isFalse);
       expect(note.title?.isEmpty, isFalse);
       expect(note.timeCreate?.isEmpty, isFalse);
       expect(note.content?.isEmpty, isFalse);
@@ -37,7 +37,7 @@ void main() {
 
     test('isNotEmpty returns false for empty Note ', () {
       final note = Note(id: '');
-      expect(note.id?.isNotEmpty, isFalse);
+      expect(note.id.isNotEmpty, isFalse);
       expect(note.content?.isNotEmpty, isNull);
       expect(note.title?.isNotEmpty, isNull);
       expect(note.timeCreate?.isNotEmpty, isNull);
@@ -46,7 +46,7 @@ void main() {
     test('isNotEmpty returns true for non-empty Note', () {
       final note =
           Note(title: title, content: content, timeCreate: timeCreate, id: id);
-      expect(note.id?.isNotEmpty, isTrue);
+      expect(note.id.isNotEmpty, isTrue);
       expect(note.content?.isNotEmpty, isTrue);
       expect(note.title?.isNotEmpty, isTrue);
       expect(note.timeCreate?.isNotEmpty, isTrue);
