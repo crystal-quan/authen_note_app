@@ -1,3 +1,5 @@
+import 'package:authen_note_app/home/bloc/home_bloc.dart';
+import 'package:authen_note_app/model/status.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,12 +13,8 @@ part 'editor_event.dart';
 part 'editor_state.dart';
 
 class EditorBloc extends Bloc<EditorEvent, EditorState> {
-  NoteRepository noteRepository = NoteRepository(
-    firestore: FirebaseFirestore.instance,
-    firebaseAuth: FirebaseAuth.instance,
-    box: Hive.box<HiveNote>('notes'),
-  );
-  EditorBloc() : super(EditorState()) {
+  NoteRepository? noteRepository;
+  EditorBloc({required this.noteRepository}) : super(EditorState()) {
     on<EditorTitle>(_onEditorTitle);
     on<EditorContent>(_onEditorContent);
     on<SaveNote>(_onSaveNote);
@@ -29,12 +27,41 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
     emit(state.copywith(content: event.value));
   }
 
-  void _onSaveNote(SaveNote event, Emitter<EditorState> emit) async {
-    final now = DateTime.now();
-    String day = now.day.toString();
-    String month = now.month.toString();
-    String year = now.year.toString();
-    emit(state.copywith(timeCreate: '$day-$month-$year'));
-    noteRepository.addNote(state.title, state.content, state.timeCreate);
+  Future<void> _onSaveNote(SaveNote event, Emitter<EditorState> emit) async {
+    emit(state.copywith(status: Status.loading));
+    getTime();
+    await addNote();
+  }
+
+  void getTime() async {
+    try {
+      final now = DateTime.now();
+      String day = now.day.toString();
+      String month = now.month.toString();
+      String year = now.year.toString();
+      emit(state.copywith(timeCreate: '$day-$month-$year'));
+    } catch (e) {
+      // emit(state.copywith(status: Status.error));
+      emit(state.copywith(timeCreate: 'getTime error'));
+      print('getTime error - $e');
+    }
+  }
+
+  Future<void> addNote() async {
+    try {
+      if (noteRepository != null) {
+        final oneNote = await noteRepository!
+            .addNote(state.title, state.content, state.timeCreate);
+        emit(state.copywith(
+          status: Status.success,
+        ));
+      } else {
+        emit(state.copywith(status: Status.error));
+        print('edittor bloc repository is null');
+      }
+    } catch (e) {
+      emit(state.copywith(status: Status.error));
+      print('edittor bloc error -$e');
+    }
   }
 }

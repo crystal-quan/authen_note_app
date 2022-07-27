@@ -1,4 +1,5 @@
 import 'package:authen_note_app/model/note_model.dart';
+import 'package:authen_note_app/model/status.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 
 import 'package:bloc/bloc.dart';
@@ -14,7 +15,7 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc({required this.noteRepository}) : super(const HomeState()){
+  HomeBloc({required this.noteRepository}) : super(HomeState()) {
     on<GetNote>(_onGetNote);
     on<Delete>(_onDelete);
   }
@@ -22,13 +23,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   late List<QueryDocumentSnapshot<Note>> notes;
 
   void _onGetNote(GetNote event, Emitter<HomeState> emit) async {
-    
-    final example = await noteRepository?.getNote();
-
-    emit(state.copyWith(listNotes: example));
+    if (noteRepository != null) {
+      emit(state.copyWith(status: Status.loading));
+      try {
+        final example = await noteRepository?.getNote();
+        emit(state.copyWith(listNotes: example, status: Status.success));
+      } catch (e) {
+        emit(state.copyWith(status: Status.error));
+        print('getNote Bloc - $e');
+      }
+    } else {
+      emit(state.copyWith(status: Status.error));
+    }
   }
-
-  /// tương tự forEach
 
   void _onDelete(Delete event, Emitter<HomeState> emit) async {
     await noteRepository?.deleteNote(event.id);

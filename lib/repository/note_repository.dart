@@ -22,8 +22,8 @@ class NoteRepository {
   FirebaseFirestore firestore;
 
   Future<Note> addNote(String title, String content, String timeCreate) async {
-    final currentUser = firebaseAuth.currentUser;
     bool result = await InternetConnectionChecker().hasConnection;
+    final currentUser = firebaseAuth.currentUser;
 
     const chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
@@ -178,10 +178,9 @@ class NoteRepository {
         await box.clear();
         return listNote;
       }
-      final a = box.keys.toList();
-      final b = a.map((e) => e.toString()).toList();
-
-      final c = b.map((e) {
+      final listKey = await box.keys.toList();
+      final listkeytoString = listKey.map((e) => e.toString()).toList();
+      final listNotes = listkeytoString.map((e) {
         final hivenotte = box.get(e);
         Note notte = Note(
             id: hivenotte?.id ?? '',
@@ -190,12 +189,11 @@ class NoteRepository {
             timeCreate: hivenotte?.timeCreate);
         return notte;
       }).toList();
-      listNotes = c;
       return listNotes;
     } else {
-      final a = await box.keys.toList();
-      final b = a.map((e) => e.toString()).toList();
-      final c = b.map((e) {
+      final listKey = await box.keys.toList();
+      final listkeytoString = listKey.map((e) => e.toString()).toList();
+      final listNotes = listkeytoString.map((e) {
         final hivenotte = box.get(e);
         Note notte = Note(
             id: hivenotte?.id ?? '',
@@ -204,7 +202,6 @@ class NoteRepository {
             timeCreate: hivenotte?.timeCreate);
         return notte;
       }).toList();
-      listNotes = c;
       return listNotes;
     }
   }

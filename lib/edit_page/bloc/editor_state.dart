@@ -3,23 +3,30 @@
 part of 'editor_bloc.dart';
 
 class EditorState extends Equatable {
-  EditorState({this.title='', this.content='', this.timeCreate=''});
+  EditorState(
+      {this.title = '',
+      this.content = '',
+      this.timeCreate = '',
+      this.status = Status.loading});
   String title;
   String content;
   String timeCreate;
+  Status status;
 
   @override
-  List<Object> get props => [content,timeCreate,title];
+  List<Object> get props => [content, timeCreate, title, status];
 
   EditorState copywith({
     String? title,
     String? content,
     String? timeCreate,
+    Status? status,
   }) {
     return EditorState(
       content: content ?? this.content,
-      timeCreate: timeCreate??this.timeCreate,
-      title: title??this.title
+      timeCreate: timeCreate ?? this.timeCreate,
+      title: title ?? this.title,
+      status: status ?? this.status,
     );
   }
 }

@@ -64,7 +64,7 @@ void main() {
     'emit nothing when NoteRepo is null',
     build: () => HomeBloc(noteRepository: null),
     act: (bloc) => bloc.add(GetNote()),
-    expect: () => <HomeState>[],
+    expect: () => <HomeState>[HomeState(listNotes: null)],
   );
   blocTest<HomeBloc, HomeState>(
     'emits listNote when GetNote is added',

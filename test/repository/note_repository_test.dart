@@ -69,7 +69,7 @@ void main() async {
     'delete Note return true',
     () async {
       final delete = await noteRepository.deleteNote('');
-      expect(true, true);
+      expect(delete, true);
     },
   );
   test(
@@ -77,7 +77,7 @@ void main() async {
     () async {
       final update = await noteRepository.updateNote(
           '', 'newTitle', 'newContent', 'newTime');
-      expect(true, true);
+      expect(update, true);
     },
   );
 
@@ -108,7 +108,7 @@ void main() async {
     () async {
       print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
       final delete = await noteRepository.deleteNote('');
-      expect(true, true);
+      expect(delete, true);
     },
   );
   test(
@@ -117,7 +117,7 @@ void main() async {
       print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
       final update = await noteRepository.updateNote(
           '', 'newTitle', 'newContent', 'newTime');
-      expect(true, true);
+      expect(update, true);
     },
   );
 

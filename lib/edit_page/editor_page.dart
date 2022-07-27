@@ -2,11 +2,16 @@
 
 import 'package:authen_note_app/edit_page/bloc/editor_bloc.dart';
 import 'package:authen_note_app/home/view/home_page.dart';
+import 'package:authen_note_app/repository/hive_note.dart';
+import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/widget/custom_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class EditorPage extends StatelessWidget {
   const EditorPage({super.key});
@@ -14,7 +19,13 @@ class EditorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => EditorBloc(),
+      create: (context) => EditorBloc(
+        noteRepository: NoteRepository(
+          firestore: FirebaseFirestore.instance,
+          firebaseAuth: FirebaseAuth.instance,
+          box: Hive.box<HiveNote>('notes'),
+        ),
+      ),
       child: const EditorView(),
     );
   }

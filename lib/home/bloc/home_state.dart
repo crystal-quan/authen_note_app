@@ -1,12 +1,15 @@
 part of 'home_bloc.dart';
 
+
+
 class HomeState extends Equatable {
-  const HomeState({this.listNotes});
+  HomeState({this.listNotes, this.status});
+  Status? status;
   final List<Note>? listNotes;
-  HomeState copyWith({List<Note>? listNotes}) {
-    return HomeState(listNotes: listNotes);
+  HomeState copyWith({List<Note>? listNotes, Status? status}) {
+    return HomeState(listNotes: listNotes, status: status);
   }
 
   @override
-  List<Object?> get props => [listNotes];
+  List<Object?> get props => [listNotes, status];
 }
