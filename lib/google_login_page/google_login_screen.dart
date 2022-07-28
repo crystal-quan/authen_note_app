@@ -5,6 +5,7 @@ import 'package:authen_note_app/widget/floatingActionButton.dart';
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../edit_page/editor_page.dart';
 
@@ -53,8 +54,9 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                   style: TextStyle(fontSize: 40, color: Colors.white),
                 ),
                 BlocProvider(
-                  create: (_) =>
-                      GoogleLoginBloc(context.read<AuthenticationRepository>()),
+                  create: (_) => GoogleLoginBloc(
+                      authenticationRepository: AuthenticationRepository(
+                          googleSignIn: GoogleSignIn())),
                   child: BlocBuilder<GoogleLoginBloc, GoogleLoginState>(
                     builder: (context, state) {
                       return SizedBox(
