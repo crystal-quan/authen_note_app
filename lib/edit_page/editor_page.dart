@@ -2,6 +2,7 @@
 
 import 'package:authen_note_app/edit_page/bloc/editor_bloc.dart';
 import 'package:authen_note_app/home/view/home_page.dart';
+import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/hive_note.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:authen_note_app/theme/color.dart';
@@ -23,7 +24,7 @@ class EditorPage extends StatelessWidget {
         noteRepository: NoteRepository(
           firestore: FirebaseFirestore.instance,
           firebaseAuth: FirebaseAuth.instance,
-          box: Hive.box<HiveNote>('notes'),
+          box: Hive.box<Note>('notes'),
         ),
       ),
       child: const EditorView(),

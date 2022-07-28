@@ -13,8 +13,9 @@ part 'editor_event.dart';
 part 'editor_state.dart';
 
 class EditorBloc extends Bloc<EditorEvent, EditorState> {
-  NoteRepository? noteRepository;
-  EditorBloc({required this.noteRepository}) : super(EditorState()) {
+  NoteRepository noteRepository;
+  EditorBloc({required this.noteRepository})
+      : super(EditorState(timeCreate: DateTime.now().toUtc())) {
     on<EditorTitle>(_onEditorTitle);
     on<EditorContent>(_onEditorContent);
     on<SaveNote>(_onSaveNote);
@@ -35,30 +36,21 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
 
   void getTime() async {
     try {
-      final now = DateTime.now();
-      String day = now.day.toString();
-      String month = now.month.toString();
-      String year = now.year.toString();
-      emit(state.copywith(timeCreate: '$day-$month-$year'));
+      final now = DateTime.now().toUtc();
+      emit(state.copywith(timeCreate: now));
     } catch (e) {
       // emit(state.copywith(status: Status.error));
-      emit(state.copywith(timeCreate: 'getTime error'));
       print('getTime error - $e');
     }
   }
 
   Future<void> addNote() async {
     try {
-      if (noteRepository != null) {
-        final oneNote = await noteRepository!
-            .addNote(state.title, state.content, state.timeCreate);
-        emit(state.copywith(
-          status: Status.success,
-        ));
-      } else {
-        emit(state.copywith(status: Status.error));
-        print('edittor bloc repository is null');
-      }
+      final oneNote = await noteRepository.addNote(
+          state.title, state.content, state.timeCreate);
+      emit(state.copywith(
+        status: Status.success,
+      ));
     } catch (e) {
       emit(state.copywith(status: Status.error));
       print('edittor bloc error -$e');

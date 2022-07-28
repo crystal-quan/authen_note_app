@@ -5,6 +5,7 @@ import 'package:authen_note_app/model/status.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:mocktail/mocktail.dart';
 
 class MockNoteRepository extends Mock implements NoteRepository {}
@@ -48,8 +49,29 @@ void main() {
   );
 
   blocTest<EditorBloc, EditorState>(
-    'emits status [loading,error] when NoteRepository is null',
-    setUp: () => editorBloc = EditorBloc(noteRepository: null),
+    'emits time is error when bloc.getTime has error',
+    setUp: () {
+      editorBloc = EditorBloc(noteRepository: noteRepository);
+      when(() => editorBloc.getTime()).thenThrow(Error());
+      // when(() => noteRepository.addNote(any(), any(), any()))
+      //     .thenAnswer((invocation) => Future.value(Note(id: '')));
+    },
+    build: () => editorBloc,
+    act: (bloc) => bloc.add(SaveNote()),
+    expect: () => <EditorState>[
+      EditorState(status: Status.loading),
+      EditorState(timeCreate: 'getTime error', status: Status.loading),
+      EditorState(timeCreate: 'getTime error', status: Status.success),
+    ],
+  );
+
+  blocTest<EditorBloc, EditorState>(
+    'emits status [loading,error] when NoteRepository.addNote has error',
+    setUp: () {
+      editorBloc = EditorBloc(noteRepository: noteRepository);
+      when(() => noteRepository.addNote(any(), any(), any()))
+          .thenThrow(Error());
+    },
     build: () => editorBloc,
     act: (bloc) => bloc.add(SaveNote()),
     expect: () => <EditorState>[

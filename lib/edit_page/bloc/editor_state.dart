@@ -6,20 +6,20 @@ class EditorState extends Equatable {
   EditorState(
       {this.title = '',
       this.content = '',
-      this.timeCreate = '',
+      required this.timeCreate,
       this.status = Status.loading});
   String title;
   String content;
-  String timeCreate;
+  DateTime timeCreate;
   Status status;
 
   @override
-  List<Object> get props => [content, timeCreate, title, status];
+  List<Object> get props => [content, title, status, timeCreate];
 
   EditorState copywith({
     String? title,
     String? content,
-    String? timeCreate,
+    DateTime? timeCreate,
     Status? status,
   }) {
     return EditorState(

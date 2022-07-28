@@ -1,3 +1,4 @@
+import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/hive_note.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:bloc/bloc.dart';
@@ -10,7 +11,7 @@ part 'update_event.dart';
 part 'update_state.dart';
 
 class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
-  UpdateBloc() : super(const UpdateState()) {
+  UpdateBloc() : super( UpdateState()) {
     on<EditTitle>(_onEditTitle);
     on<EditContent>(_onEditContent);
     on<ClickUpdate>(_onClickUpdate);
@@ -26,14 +27,12 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
 
   void _onClickUpdate(ClickUpdate event, Emitter<UpdateState> emit) {
     final now = DateTime.now();
-    String day = now.day.toString();
-    String month = now.month.toString();
-    String year = now.year.toString();
-    emit(state.copywith(timeUpdate: '$day-$month-$year'));
+   
+    emit(state.copywith(timeUpdate: now));
     NoteRepository _noteRepository = NoteRepository(
       firestore: FirebaseFirestore.instance,
       firebaseAuth: FirebaseAuth.instance,
-       box: Hive.box<HiveNote>('notes'),
+       box: Hive.box<Note>('notes'),
     );
     _noteRepository.updateNote(
         event.id, state.title, state.content, state.timeUpdate);

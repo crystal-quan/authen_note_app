@@ -21,9 +21,9 @@ Future<void> main() {
       );
 
       await Hive.initFlutter();
-      Hive.registerAdapter(HiveNoteAdapter());
+      Hive.registerAdapter(NoteAdapter());
 
-      await Hive.openBox<HiveNote>('notes');
+      await Hive.openBox<Note>('notes');
 
       final authenticationRepository = AuthenticationRepository();
       await authenticationRepository.user.first;

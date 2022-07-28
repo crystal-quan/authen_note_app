@@ -2,7 +2,7 @@
 
 import 'package:authen_note_app/edit_page/editor_page.dart';
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
-import 'package:authen_note_app/repository/hive_note.dart';
+import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:authen_note_app/widget/loading_screen.dart';
 
@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../app/app.dart';
 import '../widgets/avatar.dart';
@@ -30,7 +31,7 @@ class HomePage extends StatelessWidget {
         noteRepository: NoteRepository(
           firestore: FirebaseFirestore.instance,
           firebaseAuth: FirebaseAuth.instance,
-          box: Hive.box<HiveNote>('notes'),
+          box: Hive.box<Note>('notes'),
         ),
       ),
       child: const HomeScreen(),
@@ -48,9 +49,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   initState() {
+    // bool checkInternet = await InternetConnectionChecker().hasConnection;
     super.initState();
     // Add listeners to this class
     context.read<HomeBloc>().add(GetNote());
+    context.read<HomeBloc>().add(AutoAsync());
   }
 
   @override

@@ -11,6 +11,8 @@ abstract class HomeEvent extends Equatable {
 
 class GetNote extends HomeEvent {}
 
+class AutoAsync extends HomeEvent{}
+
 
 class Delete extends HomeEvent {
   String id;
