@@ -22,7 +22,7 @@ class NoteAdapter extends TypeAdapter<Note> {
       timeCreate: fields[4] as DateTime?,
       title: fields[1] == null ? '' : fields[1] as String?,
       timeUpdate: fields[5] as DateTime?,
-      isDelete: fields[6] as bool?,
+      isDelete: fields[7] as bool?,
     );
   }
 
@@ -40,7 +40,7 @@ class NoteAdapter extends TypeAdapter<Note> {
       ..write(obj.timeCreate)
       ..writeByte(5)
       ..write(obj.timeUpdate)
-      ..writeByte(6)
+      ..writeByte(7)
       ..write(obj.isDelete);
   }
 

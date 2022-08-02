@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
           box: Hive.box<Note>('notes'),
         ),
       ),
-      child: const HomeScreen(),
+      child: HomeScreen(),
     );
   }
 }
@@ -51,9 +51,10 @@ class _HomeScreenState extends State<HomeScreen> {
   initState() {
     // bool checkInternet = await InternetConnectionChecker().hasConnection;
     super.initState();
+
     // Add listeners to this class
-    context.read<HomeBloc>().add(GetNote());
     context.read<HomeBloc>().add(AutoAsync());
+    // context.read<HomeBloc>().add(GetNote());
   }
 
   @override
@@ -175,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const HomePage()));
+                                                const BuildFirstScreen()));
                                   },
                                   backgroundColor: const Color(0xFF0392CF),
                                   foregroundColor: Colors.white,

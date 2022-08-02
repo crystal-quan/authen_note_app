@@ -9,3 +9,5 @@ abstract class GoogleLoginEvent extends Equatable {
 
 
 class LoginWithGoogle extends GoogleLoginEvent{}
+
+class GetNoteOffline extends GoogleLoginEvent{}

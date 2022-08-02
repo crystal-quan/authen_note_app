@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
+import 'package:authen_note_app/app/app.dart';
 import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/update_note/bloc/update_bloc.dart';
@@ -143,7 +144,7 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const HomePage(),
+            builder: (context) => const BuildFirstScreen(),
           ));
     }
   }

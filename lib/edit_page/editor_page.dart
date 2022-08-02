@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:authen_note_app/app/app.dart';
 import 'package:authen_note_app/edit_page/bloc/editor_bloc.dart';
+import 'package:authen_note_app/google_login_page/google_login_screen.dart';
 import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/hive_note.dart';
@@ -142,11 +144,11 @@ class EditorView extends StatelessWidget {
     if (result == true) {
       FocusScope.of(context).unfocus();
       context.read<EditorBloc>().add(const SaveNote());
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HomePage(),
-          ));
+      Navigator.push(context, MaterialPageRoute(
+        builder: (context) {
+          return const BuildFirstScreen();
+        },
+      ));
     }
   }
 }

@@ -36,7 +36,7 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
 
   void getTime() async {
     try {
-      final now = DateTime.now().toUtc();
+      final DateTime now = DateTime.now().toUtc();
       emit(state.copywith(timeCreate: now));
     } catch (e) {
       // emit(state.copywith(status: Status.error));

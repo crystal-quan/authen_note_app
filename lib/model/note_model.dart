@@ -30,7 +30,8 @@ class Note extends Equatable {
   @HiveField(5)
   DateTime? timeUpdate;
 
-  @HiveField(6)
+
+  @HiveField(7)
   bool? isDelete;
 
   factory Note.fromFirestore(
@@ -38,12 +39,16 @@ class Note extends Equatable {
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
+
+    late Timestamp? timestamp = data?['timeCreate'];
+    late Timestamp? timestampUpdate = data?['timeUpdate'];
+    // late Timestamp? newTimestampUpdate = data?['newTimeUpdate'];
     return Note(
         id: data?['note id'],
         content: data?['content'],
         title: data?['title'],
-        timeCreate: data?['timeCreate'],
-        timeUpdate: data?['timeUpdate'],
+        timeCreate: timestamp?.toDate(),
+        timeUpdate: timestampUpdate?.toDate(),
         isDelete: data?['isDelete']);
   }
 
@@ -54,11 +59,13 @@ class Note extends Equatable {
       if (content != null) "content": content,
       if (timeCreate != null) "timeCreate": timeCreate,
       if (timeUpdate != null) "timeUpdate": timeUpdate,
+     
       if (isDelete != null) "isDelete": isDelete,
     };
   }
 
   @override
   // TODO: implement props
-  List<Object?> get props => [id, timeCreate, content, title, isDelete];
+  List<Object?> get props =>
+      [id, timeCreate, content, title, isDelete];
 }
