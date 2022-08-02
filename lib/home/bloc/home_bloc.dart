@@ -43,7 +43,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   void _onDelete(Delete event, Emitter<HomeState> emit) async {
     final now = DateTime.now();
-    await noteRepository.deleteNote(event.id, now);
+    await noteRepository.deleteNote(event.id, now, event.title, event.content, event.timeCreate);
   }
 
   void _onAutoAsync(AutoAsync event, Emitter<HomeState> emit) async {
@@ -63,12 +63,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             final Note note = listRemoteData.elementAt(i);
             listLocalData[a] = note;
             await noteRepository.updateToLocal(
-                note.id, note.title, note.content, note.timeUpdate);
+                note.id, note.title, note.content, note.timeUpdate,note.isDelete);
           } else if (checkTime == 1) {
             final Note note = (listLocalData ?? []).elementAt(a);
             listRemoteData[i] = note;
             await noteRepository.updateToRemote(
-                note.id, note.title, note.content, note.timeUpdate);
+                note.id, note.title, note.content, note.timeUpdate,note.isDelete);
           }
         } else {
           listLocalData.add(listRemoteData.elementAt(i));
@@ -87,12 +87,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             final Note note = (listLocalData ?? []).elementAt(i);
             listRemoteData[a] = note;
             await noteRepository.updateToRemote(
-                note.id, note.title, note.content, note.timeUpdate);
+                note.id, note.title, note.content, note.timeUpdate,note.isDelete);
           } else if (checkTime == 1) {
             final Note note = (listRemoteData).elementAt(a);
             listLocalData[i] = note;
             await noteRepository.updateToLocal(
-                note.id, note.title, note.content, note.timeUpdate);
+                note.id, note.title, note.content, note.timeUpdate,note.isDelete);
           }
         } else {
           listRemoteData.add((listLocalData ?? []).elementAt(i));

@@ -13,28 +13,35 @@ class UpdateNotePage extends StatelessWidget {
   String? title;
   String? content;
   String id;
-  UpdateNotePage({super.key, this.content, required this.id, this.title});
+  UpdateNotePage({ this.content, required this.id, this.title,super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UpdateBloc(),
-      child: UpdateNoteView(content: content, id: id, title: title),
+      child: UpdateNoteView(content: content??'', id: id, title: title??''),
     );
   }
 }
 
 class UpdateNoteView extends StatefulWidget {
-  String? title;
-  String? content;
+  String title;
+  String content;
   String id;
-  UpdateNoteView({super.key, this.content, required this.id, this.title});
+  UpdateNoteView({super.key,required this.content, required this.id,required this.title});
 
   @override
   State<UpdateNoteView> createState() => _UpdateNoteViewState();
 }
 
 class _UpdateNoteViewState extends State<UpdateNoteView> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<UpdateBloc>().add(EditTitle(null, widget.title));
+    context.read<UpdateBloc>().add(EditContent(null, widget.content));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,21 +72,25 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
                 height: 20,
               ),
               TextField(
+
                 minLines: 1,
                 maxLines: 4,
                 style: const TextStyle(
                     fontSize: 40, decoration: TextDecoration.none),
                 cursorHeight: 48,
-                controller: TextEditingController(text: widget.title),
+                 controller: TextEditingController(text: widget.title),
                 onChanged: (value) {
-                  context.read<UpdateBloc>().add(EditTitle(value));
+                  context.read<UpdateBloc>().add(EditTitle(value, widget.title));
+
                 },
+                keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
                     border: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     errorBorder: InputBorder.none,
                     disabledBorder: InputBorder.none,
+                    hintText: 'Title',
                     hintStyle:
                         TextStyle(color: Color(0xff9A9A9A), fontSize: 48)),
               ),
@@ -88,12 +99,13 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
               ),
               TextField(
                 controller: TextEditingController(text: widget.content),
+                keyboardType: TextInputType.text,
                 maxLines: 18,
                 style: const TextStyle(
                     fontSize: 25, decoration: TextDecoration.none),
                 cursorHeight: 25,
                 onChanged: (value) {
-                  context.read<UpdateBloc>().add(EditContent(value));
+                  context.read<UpdateBloc>().add(EditContent(value, widget.title));
                 },
                 decoration: const InputDecoration(
                     border: InputBorder.none,

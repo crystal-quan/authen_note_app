@@ -15,8 +15,13 @@ class AutoAsync extends HomeEvent{}
 
 
 class Delete extends HomeEvent {
-  String id;
-  Delete({required this.id});
+   String id;
+   String? title;
+   String? content;
+   DateTime? timeCreate;
+
+
+  Delete({required this.id,this.title,this.content,this.timeCreate});
   @override
   List<Object> get props => [id];
 }

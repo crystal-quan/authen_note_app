@@ -22,6 +22,7 @@ import '../widgets/avatar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   static Page page() => const MaterialPage<void>(child: HomePage());
 
   @override
@@ -171,8 +172,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SlidableAction(
                                   onPressed: (context) {
                                     context.read<HomeBloc>().add(Delete(
-                                        id: state.listNotes![index].id
-                                            .toString()));
+                                        id: state.listNotes![index].id,
+                                        content:
+                                            state.listNotes![index].content,
+                                        title: state.listNotes![index].title,
+                                        timeCreate: state
+                                            .listNotes![index].timeCreate));
                                     Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (context) =>

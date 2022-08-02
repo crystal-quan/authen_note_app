@@ -17,19 +17,19 @@ class NoteRepository {
     required this.firebaseAuth,
     required this.box,
   });
+
   FirebaseAuth firebaseAuth;
   late Note note;
   late Box<Note> box;
+  late FirebaseFirestore firestore;
 
-  FirebaseFirestore firestore;
-
-  Future<bool> addNote(
+  Future<Note> addNote(
       String title, String content, DateTime? timeCreate) async {
     bool result = await InternetConnectionChecker().hasConnection;
     final currentUser = firebaseAuth.currentUser;
 
     try {
-      late bool addNote;
+      late Note addNote;
       const chars =
           'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
       math.Random rnd = math.Random();
@@ -42,9 +42,14 @@ class NoteRepository {
       print(randomId);
       Note note = Note(
           content: content, title: title, timeCreate: timeCreate, id: randomId);
-      await addToLocal(randomId, note).whenComplete(() => addNote = true);
+      await addToLocal(randomId, note).whenComplete(() => addNote = Note(
+          id: randomId,
+          content: content,
+          timeCreate: timeCreate,
+          title: title,
+          timeUpdate: DateTime.now()));
       print('addnote Success');
-      if (result == true) {
+      if (result) {
         return await addToRemote(randomId, note);
       }
       return addNote;
@@ -55,11 +60,22 @@ class NoteRepository {
     }
   }
 
-  Future<bool> addToRemote(String id, Note note) async {
+  Future<Note> addToRemote(String id, Note note) async {
     try {
-      late bool addToRemote;
+      final currentUser = firebaseAuth.currentUser;
+      late Note addToRemote;
 
-      await box.put(id, note).whenComplete(() => addToRemote = true);
+      await firestore
+          .collection("users")
+          .doc("${currentUser?.email}")
+          .collection('notes')
+          .doc(id)
+          .withConverter(
+            fromFirestore: Note.fromFirestore,
+            toFirestore: (Note note, _) => note.toFirestore(),
+          )
+          .set(note, SetOptions(merge: true))
+          .whenComplete(() => addToRemote = note);
       return addToRemote;
     } catch (e) {
       print('Add Note to Remote (NoteRepository) has error - $e');
@@ -79,47 +95,81 @@ class NoteRepository {
     }
   }
 
-  Future<bool> deleteNote(String id, DateTime dateTime) async {
+  Future<bool> deleteNote(String id, DateTime dateTime, String? title,
+      String? content, DateTime? timeCreate) async {
     try {
-      late bool deleteComple;
-      final currentUser = firebaseAuth.currentUser;
-      final note = Note(id: id, isDelete: true, timeUpdate: dateTime);
+      final note = Note(
+          id: id,
+          title: title,
+          timeCreate: timeCreate,
+          timeUpdate: dateTime,
+          content: content,
+          isDelete: true);
+      bool result = await InternetConnectionChecker().hasConnection;
+      final deleteFromAll = await deleteFromLocal(note);
 
-      await box.put(id, note).whenComplete(() => deleteComple = true);
-      final a = box.get(id);
-      print('check delete ${a?.isDelete}');
-      await firestore
-          .collection("users")
-          .doc("${currentUser?.email}")
-          .collection('notes')
-          .doc(id)
-          .withConverter(
-            fromFirestore: Note.fromFirestore,
-            toFirestore: (Note note, _) => note.toFirestore(),
-          )
-          .set(note, SetOptions(merge: true))
-          .whenComplete(() => deleteComple = true);
-      return deleteComple;
+      if (result) {
+        await deleteFromRemote(note);
+
+      }
+      return deleteFromAll;
     } catch (e) {
       print('delete Note(repository) has error - $e');
       throw Error();
     }
   }
 
+  Future<bool> deleteFromRemote(Note note) async {
+    try {
+      late bool deleteComple;
+
+      final currentUser = firebaseAuth.currentUser;
+      await firestore
+          .collection("users")
+          .doc("${currentUser?.email}")
+          .collection('notes')
+          .doc(note.id)
+          .withConverter(
+            fromFirestore: Note.fromFirestore,
+            toFirestore: (Note note, _) => note.toFirestore(),
+          )
+          .set(note)
+          .whenComplete(() => deleteComple = true);
+
+      return deleteComple;
+    } catch (e, stack) {
+      log(e.toString(), error: e, stackTrace: stack);
+      throw Error();
+    }
+  }
+
+  Future<bool> deleteFromLocal(Note note) async {
+    try {
+      late bool deleteComple;
+
+      await box.put(note.id, note).whenComplete(() => deleteComple = true);
+      print('xoá note ${note.isDelete}');
+      return deleteComple;
+    } catch (e, stack) {
+      log(e.toString(), error: e, stackTrace: stack);
+      throw Error();
+    }
+  }
+
   Future<bool> updateNote(
-      String id, String? title, String? content, DateTime? timeUpdate) async {
+      String id, String? title, String? content, DateTime? timeUpdate, bool isDelete) async {
     bool result = await InternetConnectionChecker().hasConnection;
     late bool updateNote;
 
-    updateNote = await updateToLocal(id, title, content, timeUpdate);
+    updateNote = await updateToLocal(id, title, content, timeUpdate,isDelete);
     if (result) {
-      return await updateToRemote(id, title, content, timeUpdate);
+      return await updateToRemote(id, title, content, timeUpdate,isDelete);
     }
     return updateNote;
   }
 
   Future<bool> updateToRemote(
-      String id, String? title, String? content, DateTime? timeUpdate) async {
+      String id, String? title, String? content, DateTime? timeUpdate,bool? isDelete) async {
     try {
       late bool updateToRemote;
       final currentUser = firebaseAuth.currentUser;
@@ -128,7 +178,7 @@ class NoteRepository {
           title: title,
           content: content,
           timeUpdate: timeUpdate,
-          isDelete: false);
+          isDelete: isDelete);
       await firestore
           .collection("users")
           .doc("${currentUser?.email}")
@@ -148,7 +198,7 @@ class NoteRepository {
   }
 
   Future<bool> updateToLocal(
-      String id, String? title, String? content, DateTime? timeUpdate) async {
+      String id, String? title, String? content, DateTime? timeUpdate,bool? isDelete) async {
     try {
       late bool updateToLocal;
 
@@ -157,7 +207,7 @@ class NoteRepository {
           title: title,
           content: content,
           timeUpdate: timeUpdate,
-          isDelete: false);
+          isDelete: isDelete);
       await box.put(id, hiveNote).whenComplete(() => updateToLocal = true);
       return updateToLocal;
     } catch (e) {
@@ -210,62 +260,36 @@ class NoteRepository {
     }
   }
 
-  void check() async {
-    try {
-      int i;
-      final remoteList = await getFromRemote();
-      final localList = await getNote();
-      for (i = 0; i <= remoteList.length; i++) {
-        final sync =
-            localList?.where((element) => element.id == remoteList[i].id);
-      }
-    } catch (e) {
-      throw Error();
-    }
-  }
-
-  Future<List<Note>> putToRemote() async {
-    try {
-      final currentUser = firebaseAuth.currentUser;
-      print('check email ${currentUser?.email}');
-      final hiveNote = await getNote();
-      print('check hive data ${hiveNote}');
-      if (hiveNote != null) {
-        hiveNote.map((e) async {
-          await firestore
-              .collection("users")
-              .doc("${currentUser?.email}")
-              .collection("notes")
-              .doc(e.id)
-              .withConverter(
-                fromFirestore: Note.fromFirestore,
-                toFirestore: (Note note, _) => note.toFirestore(),
-              )
-              .set(e)
-              .whenComplete(() => print('add to Frirestore complete $e'));
-
-          return e;
-        }).toList();
-        return hiveNote;
-      } else {
-        final List<Note> list = [];
-        return list;
-      }
-    } catch (e) {
-      print('put To Remote has error - $e');
-      throw Error();
-    }
-  }
-
-  Future autoAsync() async {
-    try {
-      await putToRemote();
-      await getFromRemote();
-      final hiveNote = await getNote();
-      print('check hive data ${hiveNote}');
-    } catch (e) {
-      print('async local and remote has error - $e');
-      throw Error();
-    }
-  }
+  // Future<List<Note>> putToRemote() async {
+  //   try {
+  //     final currentUser = firebaseAuth.currentUser;
+  //     print('check email ${currentUser?.email}');
+  //     final hiveNote = await getNote();
+  //     print('check hive data ${hiveNote}');
+  //     if (hiveNote != null) {
+  //       hiveNote.map((e) async {
+  //         await firestore
+  //             .collection("users")
+  //             .doc("${currentUser?.email}")
+  //             .collection("notes")
+  //             .doc(e.id)
+  //             .withConverter(
+  //               fromFirestore: Note.fromFirestore,
+  //               toFirestore: (Note note, _) => note.toFirestore(),
+  //             )
+  //             .set(e)
+  //             .whenComplete(() => print('add to Frirestore complete $e'));
+  //
+  //         return e;
+  //       }).toList();
+  //       return hiveNote;
+  //     } else {
+  //       final List<Note> list = [];
+  //       return list;
+  //     }
+  //   } catch (e) {
+  //     print('put To Remote has error - $e');
+  //     throw Error();
+  //   }
+  // }
 }
