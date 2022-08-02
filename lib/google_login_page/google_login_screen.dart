@@ -18,10 +18,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../edit_page/editor_page.dart';
 import '../update_note/update_note.dart';
+import '../widget/loading_screen.dart';
 
 class GoogleLoginPage extends StatelessWidget {
   static Page googleLogin() =>
       const MaterialPage<void>(child: GoogleLoginPage());
+
   const GoogleLoginPage({super.key});
 
   @override
@@ -85,108 +87,109 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
               MaterialPageRoute(builder: (context) => const EditorPage()));
         }),
         body: BlocBuilder<GoogleLoginBloc, GoogleLoginState>(
-            builder: (context, state) {
-          // if (state.noteOffline?.length != null) {
-          if (state.noteOffline.length == 0) {
-            return SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: (MediaQuery.of(context).size.height < 800.00)
-                    ? 350
-                    : MediaQuery.of(context).size.height * 0.7,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/ic_center_bg.png',
-                    ),
-                    const Text(
-                      'Create your first note !',
-                      style: TextStyle(fontSize: 20),
-                    )
-                  ],
-                ));
-          } else {
-            return SizedBox(
-              height: (MediaQuery.of(context).size.height < 800.00)
-                  ? 350
-                  : MediaQuery.of(context).size.height * 0.74,
-              child: ListView.separated(
-                separatorBuilder: (context, index) => const SizedBox(
-                  height: 20,
-                ),
-                padding: const EdgeInsets.all(20),
-                addAutomaticKeepAlives: true,
-                itemCount: state.noteOffline.length,
-                itemBuilder: (context, index) {
-                  return Slidable(
-                    endActionPane: ActionPane(
-                      motion: const DrawerMotion(),
+          builder: (context, state) {
+            if (state.noteOffline?.length != null) {
+              if (state.noteOffline?.length == 0) {
+                return SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: (MediaQuery.of(context).size.height < 800.00)
+                        ? 350
+                        : MediaQuery.of(context).size.height * 0.7,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SlidableAction(
-                          // An action can be bigger than the others.
-
-                          onPressed: (context) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => UpdateNotePage(
-                                        content:
-                                            state.noteOffline[index].content,
-                                        id: state.noteOffline[index].id,
-                                        title:
-                                            state.noteOffline[index].title)));
-                          },
-                          backgroundColor: const Color(0xFF7BC043),
-                          foregroundColor: Colors.white,
-                          icon: Icons.edit,
-                          label: 'Edit',
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
+                        Image.asset(
+                          'assets/images/ic_center_bg.png',
                         ),
-                        SlidableAction(
-                          onPressed: (context) {
-                            homeBloc.add(Delete(
-                                id: state.noteOffline[index].id.toString()));
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (context) {
-                              return const GoogleLoginPage();
-                            }));
-                          },
-                          backgroundColor: const Color(0xFF0392CF),
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
-                          label: 'Delete',
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                        ),
+                        const Text(
+                          'Create your first note !',
+                          style: TextStyle(fontSize: 20),
+                        )
                       ],
+                    ));
+              } else {
+                return SizedBox(
+                  height: (MediaQuery.of(context).size.height < 800.00)
+                      ? 350
+                      : MediaQuery.of(context).size.height * 0.74,
+                  child: ListView.separated(
+                    separatorBuilder: (context, index) => const SizedBox(
+                      height: 20,
                     ),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          color: titleColor[index % 6],
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10))),
-                      padding: const EdgeInsets.all(25),
-                      child: Text(
-                        '${state.noteOffline[index].title}',
-                        style:
-                            const TextStyle(fontSize: 30, color: Colors.black),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-          // } else {
-          //   return LoadingScreen(
-          //     height: (MediaQuery.of(context).size.height < 900.00)
-          //         ? 350
-          //         : MediaQuery.of(context).size.height * 0.5,
-          //   );
-        }
-            // },
-            ));
+                    padding: const EdgeInsets.all(20),
+                    addAutomaticKeepAlives: true,
+                    itemCount: state.noteOffline!.length,
+                    itemBuilder: (context, index) {
+                      return Slidable(
+                        endActionPane: ActionPane(
+                          motion: const DrawerMotion(),
+                          children: [
+                            SlidableAction(
+                              // An action can be bigger than the others.
+
+                              onPressed: (context) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => UpdateNotePage(
+                                            content: state
+                                                .noteOffline![index].content,
+                                            id: state.noteOffline![index].id,
+                                            title: state
+                                                .noteOffline![index].title)));
+                              },
+                              backgroundColor: const Color(0xFF7BC043),
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                              label: 'Edit',
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                            ),
+                            SlidableAction(
+                              onPressed: (context) {
+                                homeBloc.add(Delete(
+                                    id: state.noteOffline![index]!.id
+                                        .toString()));
+                                Navigator.of(context)
+                                    .push(MaterialPageRoute(builder: (context) {
+                                  return const GoogleLoginPage();
+                                }));
+                              },
+                              backgroundColor: const Color(0xFF0392CF),
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: 'Delete',
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                            ),
+                          ],
+                        ),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              color: titleColor[index % 6],
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10))),
+                          padding: const EdgeInsets.all(25),
+                          child: Text(
+                            '${state.noteOffline![index].title}',
+                            style: const TextStyle(
+                                fontSize: 30, color: Colors.black),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+            } else {
+              return LoadingScreen(
+                height: (MediaQuery.of(context).size.height < 900.00)
+                    ? 350
+                    : MediaQuery.of(context).size.height * 0.5,
+              );
+            }
+          },
+        ));
   }
 }

@@ -39,7 +39,7 @@ class AppView extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
       home: AnimatedSplashScreen(
-          duration: 1000,
+          duration: 0,
           splash: Icons.note_add,
           nextScreen: const BuildFirstScreen(),
           splashTransition: SplashTransition.fadeTransition,

@@ -15,7 +15,7 @@ part 'editor_state.dart';
 class EditorBloc extends Bloc<EditorEvent, EditorState> {
   NoteRepository noteRepository;
   EditorBloc({required this.noteRepository})
-      : super(EditorState(timeCreate: DateTime.now().toUtc())) {
+      : super(EditorState(timeCreate: DateTime.now())) {
     on<EditorTitle>(_onEditorTitle);
     on<EditorContent>(_onEditorContent);
     on<SaveNote>(_onSaveNote);
@@ -36,7 +36,7 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
 
   void getTime() async {
     try {
-      final DateTime now = DateTime.now().toUtc();
+      final DateTime now = DateTime.now();
       emit(state.copywith(timeCreate: now));
     } catch (e) {
       // emit(state.copywith(status: Status.error));

@@ -11,6 +11,7 @@ import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/widget/custom_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -141,12 +142,12 @@ class EditorView extends StatelessWidget {
             // ),
           );
         });
-    if (result == true) {
+    if (result) {
       FocusScope.of(context).unfocus();
       context.read<EditorBloc>().add(const SaveNote());
       Navigator.push(context, MaterialPageRoute(
         builder: (context) {
-          return const BuildFirstScreen();
+         return BuildFirstScreen();
         },
       ));
     }

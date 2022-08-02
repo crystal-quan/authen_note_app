@@ -14,13 +14,13 @@ part 'google_login_state.dart';
 class GoogleLoginBloc extends Bloc<GoogleLoginEvent, GoogleLoginState> {
   GoogleLoginBloc(
       {required this.authenticationRepository, required this.noteRepo})
-      : super(GoogleLoginState(noteOffline: [])) {
+      : super(GoogleLoginState()) {
     on<LoginWithGoogle>(logInWithGoogle);
     on<GetNoteOffline>(_onGetNoteOffline);
   }
 
   final AuthenticationRepository authenticationRepository;
-  final NoteRepository noteRepo;
+  late NoteRepository noteRepo;
 
   Future<void> logInWithGoogle(
       GoogleLoginEvent event, Emitter<GoogleLoginState> emit) async {
