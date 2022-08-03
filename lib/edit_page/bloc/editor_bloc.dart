@@ -7,7 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import '../../repository/hive_note.dart';
+
 
 part 'editor_event.dart';
 part 'editor_state.dart';

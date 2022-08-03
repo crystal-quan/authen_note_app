@@ -20,3 +20,5 @@ class AppUserChanged extends AppEvent {
   @override
   List<Object> get props => [user];
 }
+
+class CheckLogin extends AppEvent{}

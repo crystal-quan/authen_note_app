@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:authen_note_app/model/note_model.dart';
-import 'package:authen_note_app/repository/hive_note.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,7 +18,7 @@ class NoteRepository {
     required this.box,
   });
 
-  FirebaseAuth firebaseAuth;
+  late FirebaseAuth firebaseAuth;
   late Note note;
   late Box<Note> box;
   late FirebaseFirestore firestore;
@@ -50,7 +50,10 @@ class NoteRepository {
           timeUpdate: DateTime.now()));
       print('addnote Success');
       if (result) {
-        return await addToRemote(randomId, note);
+        return await addToRemote(
+          randomId,
+          note,
+        );
       }
       return addNote;
     } catch (e, stack) {
@@ -63,7 +66,6 @@ class NoteRepository {
   Future<Note> addToRemote(String id, Note note) async {
     try {
       final currentUser = firebaseAuth.currentUser;
-      late Note addToRemote;
 
       await firestore
           .collection("users")
@@ -74,10 +76,10 @@ class NoteRepository {
             fromFirestore: Note.fromFirestore,
             toFirestore: (Note note, _) => note.toFirestore(),
           )
-          .set(note, SetOptions(merge: true))
-          .whenComplete(() => addToRemote = note);
-      return addToRemote;
-    } catch (e) {
+          .set(note, SetOptions(merge: true));
+      return note;
+    } catch (e, stack) {
+      log(e.toString(), error: e, stackTrace: stack);
       print('Add Note to Remote (NoteRepository) has error - $e');
       throw Error();
     }
@@ -110,10 +112,10 @@ class NoteRepository {
 
       if (result) {
         await deleteFromRemote(note);
-
       }
       return deleteFromAll;
-    } catch (e) {
+    } catch (e, stack) {
+      log(e.toString(), error: e, stackTrace: stack);
       print('delete Note(repository) has error - $e');
       throw Error();
     }
@@ -156,20 +158,20 @@ class NoteRepository {
     }
   }
 
-  Future<bool> updateNote(
-      String id, String? title, String? content, DateTime? timeUpdate, bool isDelete) async {
+  Future<bool> updateNote(String id, String? title, String? content,
+      DateTime? timeUpdate, bool isDelete) async {
     bool result = await InternetConnectionChecker().hasConnection;
     late bool updateNote;
 
-    updateNote = await updateToLocal(id, title, content, timeUpdate,isDelete);
+    updateNote = await updateToLocal(id, title, content, timeUpdate, isDelete);
     if (result) {
-      return await updateToRemote(id, title, content, timeUpdate,isDelete);
+      return await updateToRemote(id, title, content, timeUpdate, isDelete);
     }
     return updateNote;
   }
 
-  Future<bool> updateToRemote(
-      String id, String? title, String? content, DateTime? timeUpdate,bool? isDelete) async {
+  Future<bool> updateToRemote(String id, String? title, String? content,
+      DateTime? timeUpdate, bool? isDelete) async {
     try {
       late bool updateToRemote;
       final currentUser = firebaseAuth.currentUser;
@@ -197,8 +199,8 @@ class NoteRepository {
     }
   }
 
-  Future<bool> updateToLocal(
-      String id, String? title, String? content, DateTime? timeUpdate,bool? isDelete) async {
+  Future<bool> updateToLocal(String id, String? title, String? content,
+      DateTime? timeUpdate, bool? isDelete) async {
     try {
       late bool updateToLocal;
 
@@ -216,8 +218,8 @@ class NoteRepository {
     }
   }
 
-  Future<List<Note>?> getNote() async {
-    late List<Note>? listNotes;
+  Future<List<Note>> getNote() async {
+    late List<Note> listNotes;
 
     final listKey = await box.keys.toList();
     final listkeytoString = listKey.map((e) => e.toString()).toList();
@@ -248,8 +250,6 @@ class NoteRepository {
           )
           .get();
       final remoteList = remoteData.docs.map((e) {
-        print('check Time - ${e.data().timeCreate}');
-        // box.put(e.id, e.data());
         return e.data();
       }).toList();
 

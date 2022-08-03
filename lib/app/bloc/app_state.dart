@@ -6,19 +6,21 @@ enum AppStatus {
 }
 
 class AppState extends Equatable {
-  const AppState._(
-      {required this.status, this.user = User.empty});
-
-  const AppState.authenticated(User user)
-      : this._(status: AppStatus.authenticated, user: user);
-
-  const AppState.unauthenticated() : this._(status: AppStatus.unauthenticated);
+  AppState({this.user = User.empty, this.status = AppStatus.unauthenticated});
 
   final AppStatus status;
   final User user;
- 
 
   @override
   List<Object> get props => [status, user];
- 
+
+  AppState copyWith({
+    AppStatus? status,
+    User? user,
+  }) {
+    return AppState(
+      status: status ?? this.status,
+      user: user ?? this.user,
+    );
+  }
 }

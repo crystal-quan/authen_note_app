@@ -1,5 +1,4 @@
 import 'package:authen_note_app/model/note_model.dart';
-import 'package:authen_note_app/repository/hive_note.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

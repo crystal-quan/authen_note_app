@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:authen_note_app/home/bloc/home_bloc.dart';
 import 'package:authen_note_app/model/note_model.dart';
+import 'package:authen_note_app/repository/google_authenRepository.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
-import 'package:authentication_repository/authentication_repository.dart';
+// import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
@@ -19,7 +19,7 @@ class GoogleLoginBloc extends Bloc<GoogleLoginEvent, GoogleLoginState> {
     on<GetNoteOffline>(_onGetNoteOffline);
   }
 
-  final AuthenticationRepository authenticationRepository;
+  final GoogleAuthenRepository authenticationRepository;
   late NoteRepository noteRepo;
 
   Future<void> logInWithGoogle(
@@ -28,15 +28,12 @@ class GoogleLoginBloc extends Bloc<GoogleLoginEvent, GoogleLoginState> {
     try {
       await authenticationRepository.logInWithGoogle();
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
-    } on LogInWithGoogleFailure catch (e) {
+    } catch (e) {
       emit(
         state.copyWith(
-          errorMessage: e.message,
           status: FormzStatus.submissionFailure,
         ),
       );
-    } catch (_) {
-      emit(state.copyWith(status: FormzStatus.submissionFailure));
     }
   }
 
@@ -44,7 +41,7 @@ class GoogleLoginBloc extends Bloc<GoogleLoginEvent, GoogleLoginState> {
       GetNoteOffline event, Emitter<GoogleLoginState> emit) async {
     final noteOffline = await noteRepo.getNote();
     final result = noteOffline
-        ?.where(
+        .where(
           (element) => element.isDelete == false,
         )
         .toList();
