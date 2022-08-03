@@ -148,7 +148,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                             SlidableAction(
                               onPressed: (context) {
                                 homeBloc.add(Delete(
-                                    id: state.noteOffline![index]!.id
+                                    id: state.noteOffline![index].id
                                         .toString()));
                                 Navigator.of(context)
                                     .push(MaterialPageRoute(builder: (context) {
