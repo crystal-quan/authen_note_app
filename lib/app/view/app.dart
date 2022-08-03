@@ -39,13 +39,6 @@ class AppView extends StatefulWidget {
 
 class _AppViewState extends State<AppView> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    context.read<AppBloc>().add(CheckLogin());
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -60,8 +53,20 @@ class _AppViewState extends State<AppView> {
   }
 }
 
-class BuildFirstScreen extends StatelessWidget {
+class BuildFirstScreen extends StatefulWidget {
   const BuildFirstScreen({super.key});
+
+  @override
+  State<BuildFirstScreen> createState() => _BuildFirstScreenState();
+}
+
+class _BuildFirstScreenState extends State<BuildFirstScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<AppBloc>().add(CheckLogin());
+  }
 
   @override
   Widget build(BuildContext context) {

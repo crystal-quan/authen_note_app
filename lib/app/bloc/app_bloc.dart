@@ -4,7 +4,7 @@ import 'package:authen_note_app/repository/google_authenRepository.dart';
 // import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_auth/firebase_auth.dart ' as auth;
+// import 'package:firebase_auth/firebase_auth.dart ' as auth;
 
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
@@ -29,11 +29,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Emitter<AppState> emit,
   ) async {
     final currentUser = await ggAuthenticationRepository.getUser();
-    final statusApp = (currentUser == null)
+    final statusApp = (currentUser?.name == null)
         ? AppStatus.unauthenticated
         : AppStatus.authenticated;
 
     emit(state.copyWith(user: currentUser, status: statusApp));
+    print(state.status);
   }
 
   void _onLogoutRequested(

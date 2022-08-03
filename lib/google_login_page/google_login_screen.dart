@@ -1,6 +1,7 @@
 import 'package:authen_note_app/app/app.dart';
 import 'package:authen_note_app/google_login_page/bloc/google_login_bloc.dart';
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
+import 'package:authen_note_app/home/home.dart';
 import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/google_authenRepository.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
@@ -10,7 +11,7 @@ import 'package:authen_note_app/widget/custom_button.dart';
 import 'package:authen_note_app/widget/floatingActionButton.dart';
 // import 'package:authentication_repository/authentication_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -33,10 +34,11 @@ class GoogleLoginPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => GoogleLoginBloc(
         authenticationRepository: GoogleAuthenRepository(
-            firebaseAuth: FirebaseAuth.instance, googleSignIn: GoogleSignIn()),
+            firebaseAuth: auth.FirebaseAuth.instance,
+            googleSignIn: GoogleSignIn()),
         noteRepo: NoteRepository(
           firestore: FirebaseFirestore.instance,
-          firebaseAuth: FirebaseAuth.instance,
+          firebaseAuth: auth.FirebaseAuth.instance,
           box: Hive.box<Note>('notes'),
         ),
       ),
@@ -66,7 +68,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
     final homeBloc = HomeBloc(
       noteRepository: NoteRepository(
         firestore: FirebaseFirestore.instance,
-        firebaseAuth: FirebaseAuth.instance,
+        firebaseAuth: auth.FirebaseAuth.instance,
         box: Hive.box<Note>('notes'),
       ),
     );
@@ -79,8 +81,13 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
             actions: [
               CustomButton(
                 imageAssets: 'ic_google_login.png',
-                onTap: () =>
-                    context.read<GoogleLoginBloc>().add(LoginWithGoogle()),
+                onTap: () {
+                  context.read<GoogleLoginBloc>().add(LoginWithGoogle());
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => BuildFirstScreen()));
+                },
               )
             ],
             backgroundColor: backgroundColor2),

@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:authen_note_app/model/note_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -18,7 +18,7 @@ class NoteRepository {
     required this.box,
   });
 
-  late FirebaseAuth firebaseAuth;
+  late auth.FirebaseAuth firebaseAuth;
   late Note note;
   late Box<Note> box;
   late FirebaseFirestore firestore;
@@ -41,13 +41,19 @@ class NoteRepository {
       String randomId = getRandomString(15);
       print(randomId);
       Note note = Note(
-          content: content, title: title, timeCreate: timeCreate, id: randomId);
+        content: content,
+        title: title,
+        timeCreate: timeCreate,
+        id: randomId,
+        timeUpdate: timeCreate,
+      );
       await addToLocal(randomId, note).whenComplete(() => addNote = Note(
-          id: randomId,
-          content: content,
-          timeCreate: timeCreate,
-          title: title,
-          timeUpdate: DateTime.now()));
+            id: randomId,
+            content: content,
+            timeCreate: timeCreate,
+            title: title,
+            timeUpdate: timeCreate,
+          ));
       print('addnote Success');
       if (result) {
         return await addToRemote(

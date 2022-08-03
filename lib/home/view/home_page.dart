@@ -10,7 +10,7 @@ import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/update_note/update_note.dart';
 import 'package:authen_note_app/widget/floatingActionButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
       create: (context) => HomeBloc(
         noteRepository: NoteRepository(
           firestore: FirebaseFirestore.instance,
-          firebaseAuth: FirebaseAuth.instance,
+          firebaseAuth: auth.FirebaseAuth.instance,
           box: Hive.box<Note>('notes'),
         ),
       ),

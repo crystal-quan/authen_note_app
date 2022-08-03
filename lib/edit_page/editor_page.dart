@@ -9,7 +9,7 @@ import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/widget/custom_button.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class EditorPage extends StatelessWidget {
       create: (context) => EditorBloc(
         noteRepository: NoteRepository(
           firestore: FirebaseFirestore.instance,
-          firebaseAuth: FirebaseAuth.instance,
+          firebaseAuth: auth.FirebaseAuth.instance,
           box: Hive.box<Note>('notes'),
         ),
       ),
@@ -146,7 +146,7 @@ class EditorView extends StatelessWidget {
       context.read<EditorBloc>().add(const SaveNote());
       Navigator.push(context, MaterialPageRoute(
         builder: (context) {
-         return BuildFirstScreen();
+          return BuildFirstScreen();
         },
       ));
     }
