@@ -14,70 +14,61 @@ void main() {
   late EditorBloc editorBloc;
   late MockNoteRepository noteRepository;
   late DateTime now;
-  late String time;
 
   setUp(
     () {
       now = DateTime.now();
-      String day = now.day.toString();
-      String month = now.month.toString();
-      String year = now.year.toString();
-      time = '$day-$month-$year';
-
       noteRepository = MockNoteRepository();
       // editorBloc = EditorBloc(noteRepository: noteRepository);
     },
   );
 
   test(
-    'initial state is correct',
+    'initial state is EditorState',
     () {
       editorBloc = EditorBloc(noteRepository: noteRepository);
       expect(editorBloc.state, EditorState());
     },
   );
+
   blocTest<EditorBloc, EditorState>(
-    'call getTime and addNote when call SaveNote',
+    'Edit Title',
+    build: () => EditorBloc(noteRepository: noteRepository),
+    act: (bloc) => bloc.add(EditorTitle('title')),
+    expect: () => <EditorState>[EditorState(title: 'title')],
+  );
+
+  blocTest<EditorBloc, EditorState>(
+    'Edit Content',
+    build: () => EditorBloc(noteRepository: noteRepository),
+    act: (bloc) => bloc.add(EditorTitle('Content')),
+    expect: () => <EditorState>[EditorState(title: 'Content')],
+  );
+  blocTest<EditorBloc, EditorState>(
+    'call addNote when call event SaveNote',
     setUp: () {
       editorBloc = EditorBloc(noteRepository: noteRepository);
     },
     build: () => editorBloc,
     act: (bloc) => bloc.add(SaveNote()),
     verify: (_) {
-      verify(() => noteRepository.addNote('', '', time)).called(1);
+      verify(() => noteRepository.addNote('', '')).called(1);
     },
-  );
-
-  blocTest<EditorBloc, EditorState>(
-    'emits time is error when bloc.getTime has error',
-    setUp: () {
-      editorBloc = EditorBloc(noteRepository: noteRepository);
-      when(() => editorBloc.getTime()).thenThrow(Error());
-      // when(() => noteRepository.addNote(any(), any(), any()))
-      //     .thenAnswer((invocation) => Future.value(Note(id: '')));
-    },
-    build: () => editorBloc,
-    act: (bloc) => bloc.add(SaveNote()),
-    expect: () => <EditorState>[
-      EditorState(status: Status.loading),
-      EditorState(timeCreate: 'getTime error', status: Status.loading),
-      EditorState(timeCreate: 'getTime error', status: Status.success),
-    ],
   );
 
   blocTest<EditorBloc, EditorState>(
     'emits status [loading,error] when NoteRepository.addNote has error',
     setUp: () {
       editorBloc = EditorBloc(noteRepository: noteRepository);
-      when(() => noteRepository.addNote(any(), any(), any()))
+      when(() => noteRepository.addNote(any(), any()))
           .thenThrow(Error());
     },
     build: () => editorBloc,
     act: (bloc) => bloc.add(SaveNote()),
     expect: () => <EditorState>[
       EditorState(status: Status.loading),
-      EditorState(timeCreate: time, status: Status.loading),
-      EditorState(timeCreate: time, status: Status.error),
+      EditorState(timeCreate: now, status: Status.loading),
+      EditorState(timeCreate: now, status: Status.error),
     ],
   );
 
@@ -85,19 +76,16 @@ void main() {
     'emit [loading , success] when saveNote',
     setUp: () {
       editorBloc = EditorBloc(noteRepository: noteRepository);
-      when(() => noteRepository.addNote('', '', time)).thenAnswer(
-          (invocation) async => await Future.value(Note(
-              content: 'newContent',
-              title: 'newTitile',
-              timeCreate: 'newTime')));
+      when(() => noteRepository.addNote('', ''))
+          .thenAnswer((invocation) async => await Future.value(true));
     },
     build: () => editorBloc,
     act: (bloc) => bloc.add(SaveNote()),
     expect: () => <EditorState>[
       EditorState(status: Status.loading),
-      EditorState(status: Status.loading, timeCreate: time),
+      EditorState(status: Status.loading, timeCreate: now),
       EditorState(
-          timeCreate: time, status: Status.success, content: '', title: '')
+          timeCreate: now, status: Status.success, content: '', title: '')
     ],
   );
 }

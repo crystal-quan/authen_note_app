@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/google_authenRepository.dart';
@@ -37,14 +38,26 @@ class GoogleLoginBloc extends Bloc<GoogleLoginEvent, GoogleLoginState> {
     }
   }
 
-  FutureOr<void> _onGetNoteOffline(
+  Future<void> _onGetNoteOffline(
       GetNoteOffline event, Emitter<GoogleLoginState> emit) async {
-    final noteOffline = await noteRepo.getNote();
-    final result = noteOffline
-        .where(
-          (element) => element.isDelete == false,
-        )
-        .toList();
+    late List<Note?>? result;
+    try {
+      final noteOffline = await noteRepo.getNote();
+      print('quanquan - $noteOffline');
+      if (noteOffline != null) {
+        result = noteOffline
+            .where(
+              (element) => element.isDelete == false,
+            )
+            .toList();
+      } else {
+        result = null;
+      }
+    } catch (e, stack) {
+      log(e.toString(), error: e, stackTrace: stack);
+      throw Error();
+    }
+
     emit(state.copyWith(noteOffline: result));
   }
 }

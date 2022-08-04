@@ -115,40 +115,39 @@ class EditorView extends StatelessWidget {
 
   void _dialogBuilder(BuildContext context) async {
     final result = await showDialog(
-        context: context,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            actions: [
-              CupertinoDialogAction(
-                textStyle: const TextStyle(fontSize: 40, color: Colors.red),
-                child: const Text('Discard'),
-                onPressed: () => Navigator.pop(context, false),
-              ),
-              CupertinoDialogAction(
-                textStyle: const TextStyle(fontSize: 40, color: Colors.green),
-                child: const Text('Save'),
-                onPressed: () {
-                  Navigator.pop(context, true);
-                },
-              ),
-            ],
-            title: const Text(
-              'Save changes ?',
-              style: TextStyle(fontSize: 30),
-            ),
-            // title: SingleChildScrollView(
-            //   child: Image.asset('assets/images/ic_info.png'),
-            // ),
-          );
-        });
+            context: context,
+            builder: (context) {
+              return CupertinoAlertDialog(
+                actions: [
+                  CupertinoDialogAction(
+                    textStyle: const TextStyle(fontSize: 40, color: Colors.red),
+                    child: const Text('Discard'),
+                    onPressed: () => Navigator.pop(context, false),
+                  ),
+                  CupertinoDialogAction(
+                    textStyle:
+                        const TextStyle(fontSize: 40, color: Colors.green),
+                    child: const Text('Save'),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  ),
+                ],
+                title: const Text(
+                  'Save changes ?',
+                  style: TextStyle(fontSize: 30),
+                ),
+                // title: SingleChildScrollView(
+                //   child: Image.asset('assets/images/ic_info.png'),
+                // ),
+              );
+            }) ??
+        false;
     if (result) {
       FocusScope.of(context).unfocus();
       context.read<EditorBloc>().add(const SaveNote());
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) {
-          return BuildFirstScreen();
-        },
-      ));
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const BuildFirstScreen()));
     }
   }
 }

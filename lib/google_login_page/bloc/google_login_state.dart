@@ -9,14 +9,14 @@ class GoogleLoginState extends Equatable {
 
   final FormzStatus status;
   final String? errorMessage;
-  final List<Note>? noteOffline;
+  final List<Note?>? noteOffline;
   @override
   List<Object> get props => [status];
 
   GoogleLoginState copyWith({
     FormzStatus? status,
     String? errorMessage,
-    List<Note>? noteOffline,
+    List<Note?>? noteOffline,
   }) {
     return GoogleLoginState(
         status: status ?? this.status,

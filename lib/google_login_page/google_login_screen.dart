@@ -59,6 +59,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
   initState() {
     // bool checkInternet = await InternetConnectionChecker().hasConnection;
     super.initState();
+
     // Add listeners to this class
     context.read<GoogleLoginBloc>().add(GetNoteOffline());
   }
@@ -141,10 +142,13 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                                     MaterialPageRoute(
                                         builder: (context) => UpdateNotePage(
                                             content: state
-                                                .noteOffline![index].content,
-                                            id: state.noteOffline![index].id,
+                                                .noteOffline![index]?.content,
+                                            timeCreate: state
+                                                .noteOffline![index]
+                                                ?.timeCreate,
+                                            id: state.noteOffline![index]!.id,
                                             title: state
-                                                .noteOffline![index].title)));
+                                                .noteOffline![index]?.title)));
                               },
                               backgroundColor: const Color(0xFF7BC043),
                               foregroundColor: Colors.white,
@@ -156,7 +160,11 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                             SlidableAction(
                               onPressed: (context) {
                                 homeBloc.add(Delete(
-                                    id: state.noteOffline![index].id
+                                    timeCreate:
+                                        state.noteOffline![index]?.timeCreate,
+                                    title: state.noteOffline![index]?.title,
+                                    content: state.noteOffline![index]?.content,
+                                    id: state.noteOffline![index]!.id
                                         .toString()));
                                 Navigator.of(context)
                                     .push(MaterialPageRoute(builder: (context) {
@@ -180,7 +188,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                                   const BorderRadius.all(Radius.circular(10))),
                           padding: const EdgeInsets.all(25),
                           child: Text(
-                            '${state.noteOffline![index].title}',
+                            '${state.noteOffline![index]?.title}',
                             style: const TextStyle(
                                 fontSize: 30, color: Colors.black),
                           ),

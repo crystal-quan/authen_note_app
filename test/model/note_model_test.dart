@@ -7,7 +7,7 @@ void main() {
     const id = 'mock-id';
     const title = 'mock-title';
     const content = 'mock-content';
-    const timeCreate = 'mock-timeCreate';
+    final timeCreate = DateTime.now();
 
     test('Note create', () {
       expect(
@@ -19,11 +19,10 @@ void main() {
 
     test('isEmpty returns true for empty Note id', () {
       final note = Note(id: '');
-
       expect(note.id.isEmpty, isTrue);
       expect(note.content?.isEmpty, null);
       expect(note.title?.isEmpty, null);
-      expect(note.timeCreate?.isEmpty, null);
+      expect(note.timeCreate, null);
     });
 
     test('isEmpty returns false for non-empty user', () {
@@ -31,7 +30,6 @@ void main() {
           Note(title: title, content: content, timeCreate: timeCreate, id: id);
       expect(note.id.isEmpty, isFalse);
       expect(note.title?.isEmpty, isFalse);
-      expect(note.timeCreate?.isEmpty, isFalse);
       expect(note.content?.isEmpty, isFalse);
     });
 
@@ -40,7 +38,7 @@ void main() {
       expect(note.id.isNotEmpty, isFalse);
       expect(note.content?.isNotEmpty, isNull);
       expect(note.title?.isNotEmpty, isNull);
-      expect(note.timeCreate?.isNotEmpty, isNull);
+      expect(note.timeCreate, isNull);
     });
 
     test('isNotEmpty returns true for non-empty Note', () {
@@ -49,7 +47,7 @@ void main() {
       expect(note.id.isNotEmpty, isTrue);
       expect(note.content?.isNotEmpty, isTrue);
       expect(note.title?.isNotEmpty, isTrue);
-      expect(note.timeCreate?.isNotEmpty, isTrue);
+     
     });
   });
 }

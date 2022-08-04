@@ -4,6 +4,7 @@ import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive_test/hive_test.dart ';
@@ -19,7 +20,7 @@ void main() async {
   late FakeFirebaseFirestore firestore;
 
   const mockEmail = 'crystalliu25081987@gmail.com';
-  const mockId = 'randomString(15)';
+  const mockId = 'randomString-15';
   const mockTitle = 'Mock_title';
   const mockContent = 'Mock_content';
   final mockTime = DateTime.now();
@@ -28,6 +29,16 @@ void main() async {
       email: 'crystal_quan@gmail.com',
       displayName: 'my_name',
       phoneNumber: '0987465132');
+  group('constructor', () {
+    test('create NoteRepository', () async {
+      expect(
+          NoteRepository(
+              firebaseAuth: MockFirebaseAuth(mockUser: user),
+              box: await Hive.openBox<Note>('notes'),
+              firestore: FakeFirebaseFirestore()),
+          isNotNull);
+    });
+  });
 
   setUp(
     () async {
@@ -59,112 +70,182 @@ void main() async {
   );
 
   test(
-    'addNote To Remote return Note',
+    'getRandom ID return String(15)',
     () async {
-      final addToRemote = await noteRepository.addToRemote(mockId, mockNote);
+      final String randomId = await noteRepository.getRandomId();
 
-      expect(addToRemote, equals(mockNote));
+      expect(randomId.length, mockId.length);
     },
   );
   test(
-    'addNote To Remote return Error',
+    'addNote To Remote Success return True',
+    () async {
+      final addToRemote = await noteRepository.addToRemote(mockId, mockNote);
+      expect(addToRemote, true);
+    },
+  );
+  test(
+    'addNote To Local Success return True',
+    () async {
+      final addToRemote = await noteRepository.addToLocal(mockId, mockNote);
+      expect(addToRemote, true);
+    },
+  );
+  test(
+    'addNote To Local Fail return False',
+    () async {
+      await Hive.box<Note>('notes-testing').close();
+      final addToRemote = await noteRepository.addToLocal(mockId, mockNote);
+      expect(addToRemote, false);
+    },
+  );
+
+  test(
+    'addNote To Remote Fail return false',
     () async {
       // noteRepository = NoteRepository(
       //   firestore: FakeFirebaseFirestore(),
       //   firebaseAuth: MockFirebaseAuth(mockUser: user, signedIn: false),
-      //   box: await Hive.openBox<Note>('notes-testing'),
+      //   box: Hive.box<Note>('notes-testing'),
       // );
-      when(() async => await firestore
-          .collection("users")
-          .doc("${mockEmail}")
-          .collection('notes')
-          .doc(mockId)
-          .withConverter(
-            fromFirestore: Note.fromFirestore,
-            toFirestore: (Note note, _) => note.toFirestore(),
-          )
-          .set(mockNote, SetOptions(merge: true))).thenThrow(Error());
+      await auth.signOut();
       final addToRemote = await noteRepository.addToRemote(mockId, mockNote);
 
-      expect(addToRemote, equals(Error()));
+      expect(addToRemote, false);
     },
   );
-  // test(
-  //   'add note to Firestore',
-  //   () async {
-  //     final add =
-  //         await noteRepository.addNote(mockTitle, mockContent, mockTime);
-  //     expect(add.id, isNotEmpty);
-  //     expect(add.title, mockTitle);
-  //     expect(add.content, mockContent);
-  //     expect(add.timeCreate, mockTime);
-  //   },
-  // );
+  test(
+    'add Note to local and Remote',
+    () async {
+      final addNote =
+          await noteRepository.addNote(mockTitle, mockContent);
+      expect(addNote, true);
+    },
+  );
+  test(
+    'add Note to local and Remote has error when add note To Local error',
+    () async {
+      await Hive.box<Note>('notes-testing').close();
+      // await auth.signOut();
+      final addNote =
+          await noteRepository.addNote(mockTitle, mockContent);
+      expect(addNote, false);
+    },
+  );
+  test(
+    'deleteNote From Local Success return True',
+    () async {
+      final deleteFormLocal = await noteRepository.deleteFromLocal(mockNote);
+      expect(deleteFormLocal, true);
+    },
+  );
 
-  // test(
-  //   'delete Note return true',
-  //   () async {
-  //     final delete = await noteRepository.deleteNote();
-  //     expect(delete, true);
-  //   },
-  // );
-  // test(
-  //   'Update Note return true',
-  //   () async {
-  //     final update = await noteRepository.updateNote(
-  //         '', 'newTitle', 'newContent', 'newTime');
-  //     expect(update, true);
-  //   },
-  // );
+  test(
+    'deleteNote From Remote Success return True',
+    () async {
+      final deleteFormLocal = await noteRepository.deleteFromRemote(mockNote);
+      expect(deleteFormLocal, true);
+    },
+  );
+  test(
+    'deleteNote From Local Fail return false',
+    () async {
+      await Hive.box<Note>('notes-testing').close();
+      final deleteFormLocal = await noteRepository.deleteFromLocal(mockNote);
+      expect(deleteFormLocal, false);
+    },
+  );
+  test(
+    'deleteNote From Remote Fail return false',
+    () async {
+      await auth.signOut();
+      final deleteFormLocal = await noteRepository.deleteFromRemote(mockNote);
+      expect(deleteFormLocal, false);
+    },
+  );
 
-  // test(
-  //   'Get Notes return List Note',
-  //   () async {
-  //     final getNotes = await noteRepository.getNote();
-  //     expect(getNotes, isList);
-  //   },
-  // );
+  test(
+    'deleteNote Fail return false',
+    () async {
+      await Hive.box<Note>('notes-testing').close();
+      final deleteFormLocal = await noteRepository.deleteNote(
+          mockId, mockTime, mockTitle, mockContent, mockTime);
+      expect(deleteFormLocal, false);
+    },
+  );
 
-  // test(
-  //   'add note to Hive_flutter',
-  //   () async {
-  //     await auth.signOut;
-  //     print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
+  test(
+    'deleteNote Succes return true',
+    () async {
+      final deleteFormLocal = await noteRepository.deleteNote(
+          mockId, mockTime, mockTitle, mockContent, mockTime);
+      expect(deleteFormLocal, true);
+    },
+  );
+  test(
+    'update Note To Local Success return True',
+    () async {
+      final updateTolocal = await noteRepository.updateToLocal(mockNote);
+      expect(updateTolocal, true);
+    },
+  );
 
-  //     final add =
-  //         await noteRepository.addNote(mockTitle, mockcontent, mockTime);
-  //     expect(add.id, isNotEmpty);
-  //     expect(add.title, mockTitle);
-  //     expect(add.content, mockcontent);
-  //     expect(add.timeCreate, mockTime);
-  //   },
-  // );
-  // test(
-  //   'delete Note from Hive return true',
-  //   () async {
-  //     print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
-  //     final delete = await noteRepository.deleteNote('');
-  //     expect(delete, true);
-  //   },
-  // );
-  // test(
-  //   'Update Note from Hive return true',
-  //   () async {
-  //     print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
-  //     final update = await noteRepository.updateNote(
-  //         '', 'newTitle', 'newContent', 'newTime');
-  //     expect(update, true);
-  //   },
-  // );
+  test(
+    'update Note To Remote Success return True',
+    () async {
+      final updateToRemote = await noteRepository.updateToRemote(mockNote);
+      expect(updateToRemote, true);
+    },
+  );
+  test(
+    'update Note To Local Fail return false',
+    () async {
+      await Hive.box<Note>('notes-testing').close();
+      final updateTolocal = await noteRepository.updateToLocal(mockNote);
+      expect(updateTolocal, false);
+    },
+  );
+  test(
+    'update Note To Remote Fail return false',
+    () async {
+      await auth.signOut();
+      final updateToRemote = await noteRepository.updateToRemote(mockNote);
+      expect(updateToRemote, false);
+    },
+  );
 
-  // test(
-  //   'Get Notes from Hive return List Note',
-  //   () async {
-  //     print('check login - ${noteRepository.firebaseAuth.currentUser?.uid}');
-  //     final getNotes = await noteRepository.getNote();
-  //     expect(getNotes, isList);
-  //   },
-  // );
+  test(
+    'getNote from Local Succes return List<Note> is not null',
+    () async {
+      final localNote = await noteRepository.getNote();
+      expect(localNote, isNotNull);
+    },
+  );
+  test(
+    'getNote from Local Fail return List<Note> is null',
+    () async {
+      await Hive.box<Note>('notes-testing').close();
+      final localNote = await noteRepository.getNote();
+      expect(localNote, isNull);
+    },
+  );
+
+  test(
+    'getNote from Remote Succes return List<Note> is not null',
+    () async {
+      final localNote = await noteRepository.getFromRemote();
+      expect(localNote, isNotNull);
+    },
+  );
+
+  test(
+    'getNote from Remote Fail return List<Note> is null',
+    () async {
+      await auth.signOut();
+      final localNote = await noteRepository.getFromRemote();
+      expect(localNote, isNull);
+    },
+  );
 
   tearDown(() async {
     await tearDownTestHive();
