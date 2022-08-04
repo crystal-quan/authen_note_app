@@ -83,10 +83,8 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                 imageAssets: 'ic_google_login.png',
                 onTap: () {
                   context.read<GoogleLoginBloc>().add(LoginWithGoogle());
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => BuildFirstScreen()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const BuildFirstScreen()));
                 },
               )
             ],

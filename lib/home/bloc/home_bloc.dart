@@ -8,8 +8,6 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
-
-
 part 'home_event.dart';
 part 'home_state.dart';
 
@@ -44,54 +42,63 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   void _onAutoAsync(AutoAsync event, Emitter<HomeState> emit) async {
     try {
-      final listRemoteData = await noteRepository.getFromRemote();
+      final listRemoteData = await noteRepository.getFromRemote() ?? [];
       final listLocalData = await noteRepository.getNote();
-      for (var i = 0; i < listRemoteData.length; i++) {
-        final int a = (listLocalData).indexWhere(
-            (element) => element.id == listRemoteData.elementAt(i).id);
-        if (a > -1) {
-          final checkTime = (listLocalData).elementAt(a).timeUpdate?.compareTo(
-              (listRemoteData).elementAt(i).timeUpdate ?? DateTime.now());
+      for (int remoteData = 0;
+          remoteData < listRemoteData.length;
+          remoteData++) {
+        final int localData = (listLocalData).indexWhere(
+            (element) => element.id == listRemoteData.elementAt(remoteData).id);
+        if (localData > -1) {
+          final checkTime = (listLocalData)
+              .elementAt(localData)
+              .timeUpdate
+              ?.compareTo((listRemoteData).elementAt(remoteData).timeUpdate ??
+                  DateTime.now());
           if (checkTime == -1) {
-            final Note note = listRemoteData.elementAt(i);
-            listLocalData[a] = note;
+            final Note note = listRemoteData.elementAt(remoteData);
+            listLocalData[localData] = note;
             await noteRepository.updateToLocal(note.id, note.title,
-                note.content, note.timeUpdate, note.isDelete);
+                note.content, note.timeCreate, note.timeUpdate, note.isDelete);
           } else if (checkTime == 1) {
-            final Note note = (listLocalData).elementAt(a);
-            listRemoteData[i] = note;
+            final Note note = (listLocalData).elementAt(localData);
+            listRemoteData[remoteData] = note;
             await noteRepository.updateToRemote(note.id, note.title,
                 note.content, note.timeUpdate, note.isDelete);
           }
         } else {
-          listLocalData.add(listRemoteData.elementAt(i));
+          listLocalData.add(listRemoteData.elementAt(remoteData));
           await noteRepository.addToLocal(
-              listRemoteData.elementAt(i).id, listRemoteData.elementAt(i));
+              listRemoteData.elementAt(remoteData).id,
+              listRemoteData.elementAt(remoteData));
         }
       }
 
-      for (var i = 0; i < (listLocalData).length; i++) {
-        final int a = (listRemoteData).indexWhere(
-            (element) => element.id == listRemoteData.elementAt(i).id);
-        if (a > -1) {
-          final checkTime = (listRemoteData).elementAt(a).timeUpdate?.compareTo(
-              (listLocalData).elementAt(i).timeUpdate ?? DateTime.now());
+      for (var localData = 0; localData < (listLocalData).length; localData++) {
+        final int remoteData = (listRemoteData).indexWhere(
+            (element) => element.id == listRemoteData.elementAt(localData).id);
+        if (remoteData > -1) {
+          final checkTime = (listRemoteData)
+              .elementAt(remoteData)
+              .timeUpdate
+              ?.compareTo((listLocalData).elementAt(localData).timeUpdate ??
+                  DateTime.now());
           if (checkTime == -1) {
-            final Note note = (listLocalData).elementAt(i);
-            listRemoteData[a] = note;
+            final Note note = (listLocalData).elementAt(localData);
+            listRemoteData[remoteData] = note;
             await noteRepository.updateToRemote(note.id, note.title,
                 note.content, note.timeUpdate, note.isDelete);
           } else if (checkTime == 1) {
-            final Note note = (listRemoteData).elementAt(a);
-            listLocalData[i] = note;
+            final Note note = (listRemoteData).elementAt(remoteData);
+            listLocalData[localData] = note;
             await noteRepository.updateToLocal(note.id, note.title,
-                note.content, note.timeUpdate, note.isDelete);
+                note.content, note.timeCreate, note.timeUpdate, note.isDelete);
           }
         } else {
-          listRemoteData.add((listLocalData).elementAt(i));
+          listRemoteData.add((listLocalData).elementAt(localData));
           await noteRepository.addToRemote(
-            (listLocalData).elementAt(i).id,
-            (listLocalData).elementAt(i),
+            (listLocalData).elementAt(localData).id,
+            (listLocalData).elementAt(localData),
           );
         }
 

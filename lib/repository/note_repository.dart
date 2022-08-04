@@ -164,20 +164,44 @@ class NoteRepository {
     }
   }
 
-  Future<bool> updateNote(String id, String? title, String? content,
-      DateTime? timeUpdate, bool isDelete) async {
+  Future<bool> updateNote(
+    String id,
+    String? title,
+    String? content,
+    DateTime? timeCreate,
+    DateTime? timeUpdate,
+    bool isDelete,
+  ) async {
     bool result = await InternetConnectionChecker().hasConnection;
     late bool updateNote;
 
-    updateNote = await updateToLocal(id, title, content, timeUpdate, isDelete);
+    updateNote = await updateToLocal(
+      id,
+      title,
+      content,
+      timeCreate,
+      timeUpdate,
+      isDelete,
+    );
     if (result) {
-      return await updateToRemote(id, title, content, timeUpdate, isDelete);
+      return await updateToRemote(
+        id,
+        title,
+        content,
+        timeUpdate,
+        isDelete,
+      );
     }
     return updateNote;
   }
 
-  Future<bool> updateToRemote(String id, String? title, String? content,
-      DateTime? timeUpdate, bool? isDelete) async {
+  Future<bool> updateToRemote(
+    String id,
+    String? title,
+    String? content,
+    DateTime? timeUpdate,
+    bool? isDelete,
+  ) async {
     try {
       late bool updateToRemote;
       final currentUser = firebaseAuth.currentUser;
@@ -205,17 +229,25 @@ class NoteRepository {
     }
   }
 
-  Future<bool> updateToLocal(String id, String? title, String? content,
-      DateTime? timeUpdate, bool? isDelete) async {
+  Future<bool> updateToLocal(
+    String id,
+    String? title,
+    String? content,
+    DateTime? timeCreate,
+    DateTime? timeUpdate,
+    bool? isDelete,
+  ) async {
     try {
       late bool updateToLocal;
 
       Note hiveNote = Note(
-          id: id,
-          title: title,
-          content: content,
-          timeUpdate: timeUpdate,
-          isDelete: isDelete);
+        id: id,
+        title: title,
+        content: content,
+        timeCreate: timeCreate,
+        timeUpdate: timeUpdate,
+        isDelete: isDelete,
+      );
       await box.put(id, hiveNote).whenComplete(() => updateToLocal = true);
       return updateToLocal;
     } catch (e) {
@@ -243,7 +275,7 @@ class NoteRepository {
     return listNotes;
   }
 
-  Future<List<Note>> getFromRemote() async {
+  Future<List<Note>?> getFromRemote() async {
     try {
       final currentUser = firebaseAuth.currentUser;
       final remoteData = await firestore

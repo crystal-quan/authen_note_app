@@ -12,16 +12,17 @@ abstract class UpdateEvent extends Equatable {
 class EditTitle extends UpdateEvent {
   String? value;
   String defaulValue;
-  EditTitle(this.value ,this.defaulValue);
+  EditTitle(this.value, this.defaulValue);
 }
 
 class EditContent extends UpdateEvent {
   String? value;
   String defaulValue;
-  EditContent(this.value,this.defaulValue);
+  EditContent(this.value, this.defaulValue);
 }
 
 class ClickUpdate extends UpdateEvent {
   String id;
-  ClickUpdate({required this.id});
+  DateTime? timeCreate;
+  ClickUpdate({required this.id,this.timeCreate});
 }

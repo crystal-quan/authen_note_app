@@ -13,13 +13,15 @@ class UpdateNotePage extends StatelessWidget {
   String? title;
   String? content;
   String id;
-  UpdateNotePage({ this.content, required this.id, this.title,super.key});
+  DateTime? timeCreate;
+  UpdateNotePage(
+      {this.content, this.timeCreate, required this.id, this.title, super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UpdateBloc(),
-      child: UpdateNoteView(content: content??'', id: id, title: title??''),
+      child: UpdateNoteView(content: content ?? '', id: id, title: title ?? ''),
     );
   }
 }
@@ -28,7 +30,13 @@ class UpdateNoteView extends StatefulWidget {
   String title;
   String content;
   String id;
-  UpdateNoteView({super.key,required this.content, required this.id,required this.title});
+  DateTime? timeCreate;
+  UpdateNoteView(
+      {super.key,
+      required this.content,
+      required this.id,
+      required this.title,
+      this.timeCreate});
 
   @override
   State<UpdateNoteView> createState() => _UpdateNoteViewState();
@@ -42,6 +50,7 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
     context.read<UpdateBloc>().add(EditTitle(null, widget.title));
     context.read<UpdateBloc>().add(EditContent(null, widget.content));
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,16 +81,16 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
                 height: 20,
               ),
               TextField(
-
                 minLines: 1,
                 maxLines: 4,
                 style: const TextStyle(
                     fontSize: 40, decoration: TextDecoration.none),
                 cursorHeight: 48,
-                 controller: TextEditingController(text: widget.title),
+                controller: TextEditingController(text: widget.title),
                 onChanged: (value) {
-                  context.read<UpdateBloc>().add(EditTitle(value, widget.title));
-
+                  context
+                      .read<UpdateBloc>()
+                      .add(EditTitle(value, widget.title));
                 },
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
@@ -105,7 +114,9 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
                     fontSize: 25, decoration: TextDecoration.none),
                 cursorHeight: 25,
                 onChanged: (value) {
-                  context.read<UpdateBloc>().add(EditContent(value, widget.title));
+                  context
+                      .read<UpdateBloc>()
+                      .add(EditContent(value, widget.title));
                 },
                 decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -152,7 +163,9 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
         });
     if (result == true) {
       FocusScope.of(context).unfocus();
-      context.read<UpdateBloc>().add(ClickUpdate(id: widget.id));
+      context
+          .read<UpdateBloc>()
+          .add(ClickUpdate(id: widget.id, timeCreate: widget.timeCreate));
       Navigator.push(
           context,
           MaterialPageRoute(
