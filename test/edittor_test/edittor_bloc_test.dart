@@ -26,28 +26,28 @@ void main() {
   test(
     'initial state is EditorState',
     () {
-      editorBloc = EditorBloc(noteRepository: noteRepository);
+      editorBloc = EditorBloc();
       expect(editorBloc.state, EditorState());
     },
   );
 
   blocTest<EditorBloc, EditorState>(
     'Edit Title',
-    build: () => EditorBloc(noteRepository: noteRepository),
+    build: () => EditorBloc(),
     act: (bloc) => bloc.add(EditorTitle('title')),
     expect: () => <EditorState>[EditorState(title: 'title')],
   );
 
   blocTest<EditorBloc, EditorState>(
     'Edit Content',
-    build: () => EditorBloc(noteRepository: noteRepository),
+    build: () => EditorBloc(),
     act: (bloc) => bloc.add(EditorTitle('Content')),
     expect: () => <EditorState>[EditorState(title: 'Content')],
   );
   blocTest<EditorBloc, EditorState>(
     'call addNote when call event SaveNote',
     setUp: () {
-      editorBloc = EditorBloc(noteRepository: noteRepository);
+      editorBloc = EditorBloc();
     },
     build: () => editorBloc,
     act: (bloc) => bloc.add(SaveNote()),
@@ -59,7 +59,7 @@ void main() {
   blocTest<EditorBloc, EditorState>(
     'emits status [loading,error] when NoteRepository.addNote has error',
     setUp: () {
-      editorBloc = EditorBloc(noteRepository: noteRepository);
+      editorBloc = EditorBloc();
       when(() => noteRepository.addNote(any(), any()))
           .thenThrow(Error());
     },
@@ -72,20 +72,4 @@ void main() {
     ],
   );
 
-  blocTest<EditorBloc, EditorState>(
-    'emit [loading , success] when saveNote',
-    setUp: () {
-      editorBloc = EditorBloc(noteRepository: noteRepository);
-      when(() => noteRepository.addNote('', ''))
-          .thenAnswer((invocation) async => await Future.value(true));
-    },
-    build: () => editorBloc,
-    act: (bloc) => bloc.add(SaveNote()),
-    expect: () => <EditorState>[
-      EditorState(status: Status.loading),
-      EditorState(status: Status.loading, timeCreate: now),
-      EditorState(
-          timeCreate: now, status: Status.success, content: '', title: '')
-    ],
-  );
-}
+  

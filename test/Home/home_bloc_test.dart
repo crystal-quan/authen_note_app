@@ -1,6 +1,6 @@
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
 import 'package:authen_note_app/model/note_model.dart';
-import 'package:authen_note_app/repository/hive_note.dart';
+
 import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -62,7 +62,7 @@ void main() {
 
   blocTest(
     'emit nothing when NoteRepo is null',
-    build: () => HomeBloc(noteRepository: null),
+    build: () => HomeBloc(noteRepository: mockNoteRepository),
     act: (bloc) => bloc.add(GetNote()),
     expect: () => <HomeState>[HomeState(listNotes: null)],
   );
@@ -74,4 +74,22 @@ void main() {
       HomeState(listNotes: [note])
     ],
   );
+  blocTest<HomeBloc, HomeState>(
+    'emit [loading , success] when saveNote',
+    setUp: () {
+      
+      when(() => noteRepository.addNote('', ''))
+          .thenAnswer((invocation) async => await Future.value(true));
+    },
+    build: () => editorBloc,
+    act: (bloc) => bloc.add(SaveNote()),
+    expect: () => <EditorState>[
+      EditorState(status: Status.loading),
+      EditorState(status: Status.loading, timeCreate: now),
+      EditorState(
+          timeCreate: now, status: Status.success, content: '', title: '')
+    ],
+  );
 }
+}
+
