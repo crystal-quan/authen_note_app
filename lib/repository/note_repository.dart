@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:authen_note_app/model/note_model.dart';
+import 'package:authen_note_app/repository/google_authenRepository.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:math' as math;
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -22,6 +24,8 @@ class NoteRepository {
   late Note note;
   late Box<Note> box;
   late FirebaseFirestore firestore;
+  final GoogleAuthenRepository googleAuthenRepository = GoogleAuthenRepository(
+      firebaseAuth: auth.FirebaseAuth.instance, googleSignIn: GoogleSignIn());
 
   Future<String> getRandomId() async {
     try {
@@ -41,7 +45,7 @@ class NoteRepository {
     }
   }
 
-  Future<bool> addNote(String title, String content) async {
+  Future<Note> addNote(String title, String content) async {
     bool result = await InternetConnectionChecker().hasConnection;
     final currentUser = firebaseAuth.currentUser;
     late bool addnote;
@@ -62,11 +66,11 @@ class NoteRepository {
         );
       }
 
-      return addnote;
+      return note;
     } catch (e, stack) {
       log(e.toString(), error: e, stackTrace: stack);
       print('add Note(repository) has error - $e ');
-      return addnote = false;
+      throw Error();
     }
   }
 
@@ -248,7 +252,7 @@ class NoteRepository {
         final hivenotte = box.get(e);
         return hivenotte ?? Note();
       }).toList();
-      print(listNotes);
+      print('quanbv check get offline $listNotes');
       return listNotes;
     } catch (e) {
       listNotes = null;
@@ -256,12 +260,14 @@ class NoteRepository {
     }
   }
 
-  Future<List<Note>?> getFromRemote() async {
+  Future<List<Note>> getFromRemote() async {
     bool result = await InternetConnectionChecker().hasConnection;
+    print('quanbv check - $result');
+    final currentUser = await googleAuthenRepository.getUser();
+    print('quanbv check mail - ${currentUser?.email}');
     late List<Note>? remoteList;
     if (result) {
       try {
-        final currentUser = firebaseAuth.currentUser;
         if (currentUser?.email != null) {
           final remoteData = await firestore
               .collection('users')
@@ -275,49 +281,99 @@ class NoteRepository {
           remoteList = remoteData.docs.map((e) {
             return e.data();
           }).toList();
+          print('quanbv get Online  $remoteList');
+          return remoteList;
         } else {
-          remoteList = null;
+          remoteList = [];
+          return remoteList;
         }
       } catch (e) {
         print('getNote from Remote has error - $e');
-        return remoteList = null;
+        return [];
       }
     } else {
-      remoteList = null;
+      return [];
     }
-    return remoteList;
   }
 
-  // Future<List<Note>> putToRemote() async {
-  //   try {
-  //     final currentUser = firebaseAuth.currentUser;
-  //     print('check email ${currentUser?.email}');
-  //     final hiveNote = await getNote();
-  //     print('check hive data ${hiveNote}');
-  //     if (hiveNote != null) {
-  //       hiveNote.map((e) async {
-  //         await firestore
-  //             .collection("users")
-  //             .doc("${currentUser?.email}")
-  //             .collection("notes")
-  //             .doc(e.id)
-  //             .withConverter(
-  //               fromFirestore: Note.fromFirestore,
-  //               toFirestore: (Note note, _) => note.toFirestore(),
-  //             )
-  //             .set(e)
-  //             .whenComplete(() => print('add to Frirestore complete $e'));
-  //
-  //         return e;
-  //       }).toList();
-  //       return hiveNote;
-  //     } else {
-  //       final List<Note> list = [];
-  //       return list;
-  //     }
-  //   } catch (e) {
-  //     print('put To Remote has error - $e');
-  //     throw Error();
-  //   }
-  // }
+  Future<void> onAutoAsync() async {
+    try {
+      final listRemoteData = await getFromRemote();
+      final listLocalData = await getNote() ?? [];
+      for (int remoteData = 0;
+          remoteData < listRemoteData.length;
+          remoteData++) {
+        final int localData = (listLocalData).indexWhere(
+            (element) => element.id == listRemoteData.elementAt(remoteData).id);
+        if (localData > -1) {
+          final checkTime = (listLocalData)
+              .elementAt(localData)
+              .timeUpdate
+              ?.compareTo((listRemoteData).elementAt(remoteData).timeUpdate ??
+                  DateTime.now());
+          if (checkTime == -1) {
+            final Note note = listRemoteData.elementAt(remoteData);
+            listLocalData[localData] = note;
+            await updateToLocal(note);
+          } else if (checkTime == 1) {
+            final Note note = (listLocalData).elementAt(localData);
+            listRemoteData[remoteData] = note;
+            await updateToRemote(note);
+          }
+        } else {
+          listLocalData.add(listRemoteData.elementAt(remoteData));
+          await addToLocal(listRemoteData.elementAt(remoteData).id,
+              listRemoteData.elementAt(remoteData));
+        }
+      }
+
+      for (var localData = 0; localData < (listLocalData).length; localData++) {
+        final int remoteData = (listRemoteData).indexWhere(
+            (element) => element.id == listRemoteData.elementAt(localData).id);
+        if (remoteData > -1) {
+          final checkTime = (listRemoteData)
+              .elementAt(remoteData)
+              .timeUpdate
+              ?.compareTo((listLocalData).elementAt(localData).timeUpdate ??
+                  DateTime.now());
+          if (checkTime == -1) {
+            final Note note = (listLocalData).elementAt(localData);
+            listRemoteData[remoteData] = note;
+            await updateToRemote(note);
+          } else if (checkTime == 1) {
+            final Note note = (listRemoteData).elementAt(remoteData);
+            listLocalData[localData] = note;
+            await updateToLocal(note);
+          }
+        } else {
+          listRemoteData.add((listLocalData).elementAt(localData));
+          await addToRemote(
+            (listLocalData).elementAt(localData).id,
+            (listLocalData).elementAt(localData),
+          );
+        }
+      }
+      // listNoteAsync = await noteRepository.getNote() ?? [];
+      // if (listNoteAsync != []) {
+      //   print('quanbv check bloc1 - ${listNoteAsync}');
+      //   emit(state.copyWith(
+      //     listNotes: listNoteAsync
+      //         .where((element) => element.isDelete == false)
+      //         .toList(),
+      //   ));
+      // } else {
+      //   listNoteAsync = await noteRepository.getFromRemote();
+      //   print('quanbv check bloc2 - ${listNoteAsync}');
+      //   emit(state.copyWith(
+      //     listNotes: listNoteAsync
+      //         .where((element) => element.isDelete == false)
+      //         .toList(),
+      //   ));
+      // }
+    } catch (e, stack) {
+      log(e.toString(), error: e, stackTrace: stack);
+      print('auto async(from bloc) has error  - $e ');
+      throw Error();
+    }
+  }
 }

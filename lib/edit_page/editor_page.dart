@@ -2,7 +2,8 @@
 
 import 'package:authen_note_app/app/app.dart';
 import 'package:authen_note_app/edit_page/bloc/editor_bloc.dart';
-import 'package:authen_note_app/google_login_page/google_login_screen.dart';
+import 'package:authen_note_app/home/bloc/home_bloc.dart';
+
 import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
@@ -21,21 +22,20 @@ class EditorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => EditorBloc(
-        noteRepository: NoteRepository(
-          firestore: FirebaseFirestore.instance,
-          firebaseAuth: auth.FirebaseAuth.instance,
-          box: Hive.box<Note>('notes'),
-        ),
-      ),
-      child: const EditorView(),
-    );
+    return EditorView();
   }
 }
 
 class EditorView extends StatelessWidget {
-  const EditorView({super.key});
+  final EditorBloc editorBloc = EditorBloc();
+  final HomeBloc homeBloc = HomeBloc(
+    noteRepository: NoteRepository(
+      firestore: FirebaseFirestore.instance,
+      firebaseAuth: auth.FirebaseAuth.instance,
+      box: Hive.box<Note>('notes'),
+    ),
+  );
+  EditorView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class EditorView extends StatelessWidget {
               ),
               TextField(
                 onChanged: (value) {
-                  context.read<EditorBloc>().add(EditorTitle(value));
+                  editorBloc.add(EditorTitle(value));
                 },
                 minLines: 1,
                 maxLines: 4,
@@ -96,7 +96,7 @@ class EditorView extends StatelessWidget {
                     fontSize: 25, decoration: TextDecoration.none),
                 cursorHeight: 25,
                 onChanged: (value) {
-                  context.read<EditorBloc>().add(EditorContent(value));
+                  editorBloc.add(EditorContent(value));
                 },
                 decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -145,9 +145,11 @@ class EditorView extends StatelessWidget {
         false;
     if (result) {
       FocusScope.of(context).unfocus();
-      context.read<EditorBloc>().add(const SaveNote());
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => const HomePage()));
+      // final state = context.select((EditorBloc bloc) => bloc.state);
+      homeBloc.add(AddNote(
+          content: editorBloc.state.content, title: editorBloc.state.title));
+      print('quanbv check title- ${"state.title"}');
+      Navigator.pop(context);
     }
   }
 }

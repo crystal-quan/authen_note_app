@@ -24,11 +24,11 @@ Future<void> main() {
       await Hive.openBox<Note>('notes');
       Hive.registerAdapter(UserAdapter());
       await Hive.openBox<User>('users');
-      final authenticationRepository = GoogleAuthenRepository(
-          firebaseAuth: auth.FirebaseAuth.instance,
-          googleSignIn: GoogleSignIn());
+      // final authenticationRepository = GoogleAuthenRepository(
+      //     firebaseAuth: auth.FirebaseAuth.instance,
+      //     googleSignIn: GoogleSignIn());
 
-      runApp(App(authenticationRepository: authenticationRepository));
+      runApp(const AppView());
     },
     blocObserver: AppBlocObserver(),
   );

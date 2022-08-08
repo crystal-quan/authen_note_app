@@ -11,8 +11,7 @@ part 'editor_event.dart';
 part 'editor_state.dart';
 
 class EditorBloc extends Bloc<EditorEvent, EditorState> {
-  NoteRepository noteRepository;
-  EditorBloc({required this.noteRepository}) : super(EditorState()) {
+  EditorBloc() : super(EditorState()) {
     on<EditorTitle>(_onEditorTitle);
     on<EditorContent>(_onEditorContent);
     on<SaveNote>(_onSaveNote);
@@ -25,26 +24,5 @@ class EditorBloc extends Bloc<EditorEvent, EditorState> {
     emit(state.copywith(content: event.value));
   }
 
-  void _onSaveNote(SaveNote event, Emitter<EditorState> emit) async {
-    emit(state.copywith(status: Status.loading));
-    try {
-      final saveNote = await noteRepository.addNote(
-        state.title,
-        state.content,
-      );
-      print(saveNote);
-      if (saveNote) {
-        emit(state.copywith(
-          status: Status.success,
-        ));
-      } else {
-        emit(state.copywith(
-          status: Status.error,
-        ));
-      }
-    } catch (e) {
-      emit(state.copywith(status: Status.error));
-      print('edittor bloc error -$e');
-    }
-  }
+  void _onSaveNote(SaveNote event, Emitter<EditorState> emit) async {}
 }
