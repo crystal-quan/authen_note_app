@@ -1,6 +1,7 @@
 // ignore_for_file: must_be_immutable, use_build_context_synchronously
 
 import 'package:authen_note_app/app/app.dart';
+import 'package:authen_note_app/home/bloc/home_bloc.dart';
 import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/update_note/bloc/update_bloc.dart';
@@ -9,34 +10,37 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class UpdateNotePage extends StatelessWidget {
-  String? title;
-  String? content;
-  String id;
-  DateTime? timeCreate;
-  UpdateNotePage(
-      {this.content, this.timeCreate, required this.id, this.title, super.key});
+// class UpdateNotePage extends StatelessWidget {
+//   String? title;
+//   String? content;
+//   String id;
+//   DateTime? timeCreate;
+//   UpdateNotePage(
+//       {this.content, this.timeCreate, required this.id, this.title, super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => UpdateBloc(),
-      child: UpdateNoteView(content: content ?? '', id: id, title: title ?? ''),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocProvider(
+//       create: (context) => UpdateBloc(),
+//       child: UpdateNoteView(content: content ?? '', id: id, title: title ?? ''),
+//     );
+//   }
+// }
 
 class UpdateNoteView extends StatefulWidget {
+  final UpdateBloc updateBloc = UpdateBloc();
+  final HomeBloc homeBloc;
   String title;
   String content;
   String id;
   DateTime? timeCreate;
   UpdateNoteView(
       {super.key,
+      required this.homeBloc,
       required this.content,
       required this.id,
       required this.title,
-      this.timeCreate});
+      required this.timeCreate});
 
   @override
   State<UpdateNoteView> createState() => _UpdateNoteViewState();
@@ -47,8 +51,8 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    context.read<UpdateBloc>().add(EditTitle(null, widget.title));
-    context.read<UpdateBloc>().add(EditContent(null, widget.content));
+    widget.updateBloc.add(EditTitle(null, widget.title));
+    widget.updateBloc.add(EditContent(null, widget.content));
   }
 
   @override
@@ -88,9 +92,7 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
                 cursorHeight: 48,
                 controller: TextEditingController(text: widget.title),
                 onChanged: (value) {
-                  context
-                      .read<UpdateBloc>()
-                      .add(EditTitle(value, widget.title));
+                  widget.updateBloc.add(EditTitle(value, widget.title));
                 },
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
@@ -114,9 +116,7 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
                     fontSize: 25, decoration: TextDecoration.none),
                 cursorHeight: 25,
                 onChanged: (value) {
-                  context
-                      .read<UpdateBloc>()
-                      .add(EditContent(value, widget.title));
+                  widget.updateBloc.add(EditContent(value, widget.content));
                 },
                 decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -165,11 +165,15 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
         false;
     if (result == true) {
       FocusScope.of(context).unfocus();
-      context
-          .read<UpdateBloc>()
-          .add(ClickUpdate(id: widget.id, timeCreate: widget.timeCreate));
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => const HomePage()));
+      widget.homeBloc.add(UpdateNote(
+        id: widget.id,
+        timeCreate: widget.timeCreate,
+        content: widget.updateBloc.state.content,
+        title: widget.updateBloc.state.title,
+      ));
+      print('check update ${widget.updateBloc.state.title}');
+
+      Navigator.pop(context);
     }
   }
 }

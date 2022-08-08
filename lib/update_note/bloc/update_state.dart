@@ -1,6 +1,6 @@
 part of 'update_bloc.dart';
 
-class UpdateState {
+class UpdateState extends Equatable {
   const UpdateState(
       {this.content = '', this.title = '', this.timeUpdate, this.timeCreate});
   final String title;
@@ -17,8 +17,12 @@ class UpdateState {
     return UpdateState(
       title: title ?? this.title,
       content: content ?? this.content,
-      timeCreate: timeCreate,
-      timeUpdate: timeUpdate,
+      timeCreate: timeCreate ?? this.timeCreate,
+      timeUpdate: timeUpdate ?? this.timeUpdate,
     );
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [content, title];
 }

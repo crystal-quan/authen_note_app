@@ -13,7 +13,6 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
   UpdateBloc() : super(UpdateState()) {
     on<EditTitle>(_onEditTitle);
     on<EditContent>(_onEditContent);
-    on<ClickUpdate>(_onClickUpdate);
   }
 
   void _onEditTitle(EditTitle event, Emitter<UpdateState> emit) {
@@ -22,21 +21,5 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
 
   void _onEditContent(EditContent event, Emitter<UpdateState> emit) {
     emit(state.copywith(content: event.value ?? event.defaulValue));
-  }
-
-  void _onClickUpdate(ClickUpdate event, Emitter<UpdateState> emit) {
-    final now = DateTime.now();
-
-    emit(state.copywith(timeUpdate: now, timeCreate: event.timeCreate));
-
-    NoteRepository noteRepository = NoteRepository(
-      firestore: FirebaseFirestore.instance,
-      firebaseAuth: auth.FirebaseAuth.instance,
-      box: Hive.box<Note>('notes'),
-    );
-    noteRepository.updateNote(event.id, state.title, state.content,
-        state.timeCreate, state.timeUpdate, false);
-    print(state.title);
-    print(state.content);
   }
 }

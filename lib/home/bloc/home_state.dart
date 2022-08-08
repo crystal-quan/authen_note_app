@@ -23,6 +23,8 @@ class HomeState extends Equatable {
     );
   }
 
+
+
   @override
   List<Object?> get props => [listNotes, status, loginStatus, user];
 }

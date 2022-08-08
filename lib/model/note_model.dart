@@ -30,7 +30,6 @@ class Note extends Equatable {
   @HiveField(5)
   DateTime? timeUpdate;
 
-
   @HiveField(7)
   bool? isDelete;
 
@@ -59,7 +58,6 @@ class Note extends Equatable {
       if (content != null) "content": content,
       if (timeCreate != null) "timeCreate": timeCreate,
       if (timeUpdate != null) "timeUpdate": timeUpdate,
-     
       if (isDelete != null) "isDelete": isDelete,
     };
   }
@@ -67,5 +65,5 @@ class Note extends Equatable {
   @override
   // TODO: implement props
   List<Object?> get props =>
-      [id, timeCreate, content, title, isDelete];
+      [id, timeCreate, content, title, isDelete, timeUpdate];
 }

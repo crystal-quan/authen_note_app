@@ -57,6 +57,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     if (currentUser?.email != null) {
       await noteRepository.onAutoAsync();
     }
+
     final list = await noteRepository.getNote();
     final listNotDele =
         list?.where((element) => element.isDelete == false).toList();
@@ -65,6 +66,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         user: currentUser,
         status: Status.success,
         loginStatus: FormzStatus.submissionSuccess));
+
+    print('quanquan check ${state.listNotes}');
   }
 
   void _onLogInWithGoogle(
@@ -114,14 +117,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(state.copyWith(status: Status.loading));
     try {
-      print('state chua them ${state.listNotes}');
+      print('quanbv check state list ${state.listNotes}');
       final saveNote = await noteRepository.addNote(
         event.title ?? '',
         event.content ?? '',
       );
-      state.listNotes?.add(saveNote);
-      emit(state.copyWith(status: Status.success, listNotes: state.listNotes));
-      print('state da them ${state.listNotes}');
+      final list = state.listNotes ?? [];
+      list.add(saveNote);
+      print('quanbv check event add $saveNote');
+      emit(state.copyWith(status: Status.addNote, listNotes: list));
+      print('quanvb check sate da them ${state.listNotes}');
     } catch (e) {
       emit(state.copyWith(status: Status.error));
       print('edittor bloc error -$e');
@@ -131,5 +136,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   void _onUpdateNote(
     UpdateNote event,
     Emitter<HomeState> emit,
-  ) async {}
+  ) async {
+    emit(state.copyWith(status: Status.loading));
+    final now = DateTime.now();
+    Note note = Note(
+      id: event.id,
+      content: event.content,
+      timeCreate: event.timeCreate,
+      timeUpdate: now,
+      title: event.title,
+      isDelete: false,
+    );
+    try {
+      await noteRepository.updateNote(note);
+      final stateNewlist = state.listNotes ?? [];
+      int index = stateNewlist.indexWhere((element) => element.id == event.id);
+      stateNewlist.fillRange(index, (index + 1), note);
+      emit(state.copyWith(status: Status.upDateNote, listNotes: stateNewlist));
+      print('quanbv check new ${state.listNotes}');
+    } catch (e, s) {
+      log('Update Note (Home Bloc) has error -$e', error: e, stackTrace: s);
+    }
+  }
 }

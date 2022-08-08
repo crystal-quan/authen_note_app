@@ -46,7 +46,7 @@ class _AppViewState extends State<AppView> {
       home: AnimatedSplashScreen(
           duration: 0,
           splash: Icons.note_add,
-          nextScreen: const HomePage(),
+          nextScreen: HomeScreen(),
           splashTransition: SplashTransition.fadeTransition,
           backgroundColor: Colors.blue),
     );

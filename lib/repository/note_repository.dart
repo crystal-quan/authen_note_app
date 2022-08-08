@@ -16,7 +16,6 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 class NoteRepository {
   NoteRepository({
     required this.firestore,
-    required this.firebaseAuth,
     required this.box,
   });
 
@@ -65,13 +64,12 @@ class NoteRepository {
           note,
         );
       }
-
-      return note;
     } catch (e, stack) {
       log(e.toString(), error: e, stackTrace: stack);
       print('add Note(repository) has error - $e ');
       throw Error();
     }
+    return note;
   }
 
   Future<bool> addToRemote(String id, Note note) async {
@@ -178,24 +176,10 @@ class NoteRepository {
     }
   }
 
-  Future<bool> updateNote(
-    String id,
-    String? title,
-    String? content,
-    DateTime? timeCreate,
-    DateTime? timeUpdate,
-    bool isDelete,
-  ) async {
+  Future<bool> updateNote(Note note) async {
     bool result = await InternetConnectionChecker().hasConnection;
     late bool updateNote;
-    Note note = Note(
-      id: id,
-      title: title,
-      content: content,
-      timeCreate: timeCreate,
-      timeUpdate: timeUpdate,
-      isDelete: isDelete,
-    );
+
     try {
       updateNote = await updateToLocal(note);
       if (result) {
@@ -238,7 +222,7 @@ class NoteRepository {
       updateToLocal = true;
       return updateToLocal;
     } catch (e) {
-      print('Update To Remote(noteRepository) has error - $e');
+      print('Update To Local(noteRepository) has error - $e');
       return updateToLocal = false;
     }
   }

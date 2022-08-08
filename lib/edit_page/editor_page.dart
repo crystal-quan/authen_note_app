@@ -17,25 +17,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-class EditorPage extends StatelessWidget {
-  const EditorPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return EditorView();
-  }
-}
-
 class EditorView extends StatelessWidget {
+  final List<Note> list;
   final EditorBloc editorBloc = EditorBloc();
-  final HomeBloc homeBloc = HomeBloc(
-    noteRepository: NoteRepository(
-      firestore: FirebaseFirestore.instance,
-      firebaseAuth: auth.FirebaseAuth.instance,
-      box: Hive.box<Note>('notes'),
-    ),
-  );
-  EditorView({super.key});
+  final HomeBloc homeBloc;
+  EditorView({super.key, required this.list, required this.homeBloc});
 
   @override
   Widget build(BuildContext context) {
@@ -137,18 +123,16 @@ class EditorView extends StatelessWidget {
                   'Save changes ?',
                   style: TextStyle(fontSize: 30),
                 ),
-                // title: SingleChildScrollView(
-                //   child: Image.asset('assets/images/ic_info.png'),
-                // ),
               );
             }) ??
         false;
     if (result) {
       FocusScope.of(context).unfocus();
-      // final state = context.select((EditorBloc bloc) => bloc.state);
       homeBloc.add(AddNote(
-          content: editorBloc.state.content, title: editorBloc.state.title));
-      print('quanbv check title- ${"state.title"}');
+          content: editorBloc.state.content,
+          title: editorBloc.state.title,
+          list: list));
+      print('quanbv check list- ${list}');
       Navigator.pop(context);
     }
   }
