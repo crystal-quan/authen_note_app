@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hive/hive.dart';
 
+import '../model/note_model.dart';
 import '../model/user.dart';
 
 class GoogleAuthenRepository {
@@ -10,12 +14,11 @@ class GoogleAuthenRepository {
     required this.firebaseAuth,
     required this.googleSignIn,
   });
-
+  final Box<User> userBox = Hive.box<User>('users');
   final auth.FirebaseAuth firebaseAuth;
   final GoogleSignIn googleSignIn;
   bool isWeb = kIsWeb;
-  Future<auth.UserCredential> logInWithGoogle() async {
-    // firebaseAuth = firebase_auth.FirebaseAuth.instance;
+  Future<User> logInWithGoogle() async {
     try {
       late final auth.AuthCredential credential;
       if (isWeb) {
@@ -32,8 +35,15 @@ class GoogleAuthenRepository {
           idToken: googleAuth.idToken,
         );
       }
-
-      return await firebaseAuth.signInWithCredential(credential);
+      final credentialUser =
+          await firebaseAuth.signInWithCredential(credential);
+      User currentUser = User(
+          id: credentialUser.user?.uid ?? '',
+          email: credentialUser.user?.email,
+          name: credentialUser.user?.displayName,
+          photo: credentialUser.user?.photoURL);
+      await userBox.put('userKey', currentUser);
+      return currentUser;
     } on auth.FirebaseAuthException catch (e) {
       print(e);
       throw Exception('LoginWith Google has error');
@@ -48,19 +58,20 @@ class GoogleAuthenRepository {
         firebaseAuth.signOut(),
         googleSignIn.signOut(),
       ]);
+      await Hive.box<Note>('notes').clear();
+      await Hive.box<User>('users').clear();
     } catch (_) {
       throw Exception('LogOut error');
     }
   }
 
   Future<User?> getUser() async {
-    final firebaseUser = await auth.FirebaseAuth.instance.currentUser;
-    final User currentUser = User(
-      id: (firebaseUser?.uid) ?? '',
-      email: firebaseUser?.email,
-      name: firebaseUser?.displayName,
-      photo: firebaseUser?.photoURL,
-    );
-    return currentUser;
+    try {
+      final hiveUser = userBox.get('userKey');
+      return hiveUser;
+    } catch (e, s) {
+      log(e.toString(), error: e, stackTrace: s);
+      return const User(id: '');
+    }
   }
 }

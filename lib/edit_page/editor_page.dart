@@ -146,8 +146,8 @@ class EditorView extends StatelessWidget {
     if (result) {
       FocusScope.of(context).unfocus();
       context.read<EditorBloc>().add(const SaveNote());
-      Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const BuildFirstScreen()));
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const HomePage()));
     }
   }
 }

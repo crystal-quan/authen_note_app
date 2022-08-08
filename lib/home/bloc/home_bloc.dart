@@ -1,12 +1,19 @@
 import 'dart:developer';
 
+import 'package:authen_note_app/google_login_page/bloc/google_login_bloc.dart';
 import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/model/status.dart';
+import 'package:authen_note_app/model/user.dart';
+import 'package:authen_note_app/repository/google_authenRepository.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fire_auth;
+import 'package:firebase_core/firebase_core.dart';
+import 'package:formz/formz.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -16,9 +23,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     // on<GetNote>(_onGetNote);
     on<Delete>(_onDelete);
     on<AutoAsync>(_onAutoAsync);
+    on<LoginWithGoogle>(_onLogInWithGoogle);
+    on<LogOut>(_onLogOut);
   }
   NoteRepository noteRepository;
   late List<QueryDocumentSnapshot<Note>> notes;
+  final GoogleAuthenRepository authenticationRepository =
+      GoogleAuthenRepository(
+          firebaseAuth: fire_auth.FirebaseAuth.instance,
+          googleSignIn: GoogleSignIn());
 
   // void _onGetNote(GetNote event, Emitter<HomeState> emit) async {
   //   emit(state.copyWith(status: Status.loading));
@@ -33,6 +46,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   //     print('getNote Bloc - $e');
   //   }
   // }
+  void _onLogInWithGoogle(
+      LoginWithGoogle event, Emitter<HomeState> emit) async {
+    emit(state.copyWith(loginStatus: FormzStatus.submissionInProgress));
+    try {
+      final currentUser = await authenticationRepository.logInWithGoogle();
+      emit(state.copyWith(
+          loginStatus: FormzStatus.submissionSuccess, userCopy: currentUser));
+      print(currentUser.email);
+    } catch (e) {
+      emit(
+        state.copyWith(
+          loginStatus: FormzStatus.submissionFailure,
+        ),
+      );
+    }
+  }
+
+  void _onLogOut(
+    LogOut event,
+    Emitter<HomeState> emit,
+  ) async {
+    state.copyWith(userCopy: null);
+  }
 
   void _onDelete(Delete event, Emitter<HomeState> emit) async {
     final now = DateTime.now();
@@ -43,7 +79,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   void _onAutoAsync(AutoAsync event, Emitter<HomeState> emit) async {
     try {
       final listRemoteData = await noteRepository.getFromRemote() ?? [];
-      final listLocalData = await noteRepository.getNote()?? [];
+      final listLocalData = await noteRepository.getNote() ?? [];
       for (int remoteData = 0;
           remoteData < listRemoteData.length;
           remoteData++) {
@@ -97,13 +133,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             (listLocalData).elementAt(localData),
           );
         }
-
-        emit(state.copyWith(
-          listNotes: listLocalData
-              .where((element) => element.isDelete == false)
-              .toList(),
-        ));
       }
+      final listNoteAsync = await noteRepository.getNote() ?? [];
+      print('quanbv check bloc - ${listNoteAsync}');
+      emit(state.copyWith(
+        listNotes: listNoteAsync
+            .where((element) => element.isDelete == false)
+            .toList(),
+      ));
     } catch (e, stack) {
       log(e.toString(), error: e, stackTrace: stack);
       print('auto async(from bloc) has error  - $e ');

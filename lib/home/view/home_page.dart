@@ -4,6 +4,7 @@ import 'package:authen_note_app/edit_page/editor_page.dart';
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
 import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
+import 'package:authen_note_app/widget/custom_button.dart';
 import 'package:authen_note_app/widget/loading_screen.dart';
 
 import 'package:authen_note_app/theme/color.dart';
@@ -35,7 +36,7 @@ class HomePage extends StatelessWidget {
           box: Hive.box<Note>('notes'),
         ),
       ),
-      child: HomeScreen(),
+      child: const HomeScreen(),
     );
   }
 }
@@ -55,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Add listeners to this class
     context.read<HomeBloc>().add(AutoAsync());
+
     // context.read<HomeBloc>().add(GetNote());
   }
 
@@ -71,158 +73,184 @@ class _HomeScreenState extends State<HomeScreen> {
       }),
       body: SafeArea(
         minimum: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Notes',
-                  style: TextStyle(fontSize: 40),
-                ),
+        child: BlocConsumer<HomeBloc, HomeState>(
+          listener: (context, state) {
+            // TODO: implement listener
+          },
+          buildWhen: (previous, current) => previous.user != current.user,
+          builder: (context, state) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: Avatar(photo: user.photo)),
-                    IconButton(
-                      key: const Key('homePage_logout_iconButton'),
-                      icon: const Icon(Icons.exit_to_app, size: 30),
-                      onPressed: () {
-                        context.read<AppBloc>().add(AppLogoutRequested());
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const BuildFirstScreen()));
-                      },
-                    )
+                    const Text(
+                      'Notes',
+                      style: TextStyle(fontSize: 40),
+                    ),
+                    ((user.name == null) && (state.user?.name == null))
+                        ? CustomButton(
+                            imageAssets: "ic_google_login.png",
+                            onTap: () {
+                              print('quanbv - ${state.listNotes}');
+                              context.read<HomeBloc>().add(LoginWithGoogle());
+                              context.read<AppBloc>().add(CheckLogin());
+                            },
+                          )
+                        : Row(
+                            children: [
+                              SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: Avatar(
+                                      photo: state.user?.photo ?? user.photo)),
+                              IconButton(
+                                key: const Key('homePage_logout_iconButton'),
+                                icon: const Icon(Icons.exit_to_app, size: 30),
+                                onPressed: () {
+                                  context
+                                      .read<AppBloc>()
+                                      .add(AppLogoutRequested());
+                                  context.read<HomeBloc>().add(LogOut());
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => const HomePage()));
+                                },
+                              )
+                            ],
+                          ),
                   ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(' Hello', style: textTheme.headline6),
-            const SizedBox(height: 4),
-            Text(user.name ?? '', style: textTheme.headline5),
-            const SizedBox(
-              height: 20,
-            ),
-            BlocBuilder<HomeBloc, HomeState>(
-              buildWhen: (previous, current) =>
-                  previous.listNotes?.length != current.listNotes?.length,
-              builder: (context, state) {
-                if (state.listNotes?.length != null) {
-                  if (state.listNotes!.length == 0) {
-                    return SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: (MediaQuery.of(context).size.height < 800.00)
-                            ? 350
-                            : MediaQuery.of(context).size.height * 0.7,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/ic_center_bg.png',
-                            ),
-                            const Text(
-                              'Create your first note !',
-                              style: TextStyle(fontSize: 20),
-                            )
-                          ],
-                        ));
-                  } else {
-                    return SizedBox(
-                      height: (MediaQuery.of(context).size.height < 800.00)
-                          ? 350
-                          : MediaQuery.of(context).size.height * 0.74,
-                      child: ListView.separated(
-                        separatorBuilder: (context, index) => const SizedBox(
-                          height: 20,
-                        ),
-                        padding: const EdgeInsets.all(20),
-                        addAutomaticKeepAlives: true,
-                        itemCount: state.listNotes!.length,
-                        itemBuilder: (context, index) {
-                          return Slidable(
-                            endActionPane: ActionPane(
-                              motion: const DrawerMotion(),
-                              children: [
-                                SlidableAction(
-                                  // An action can be bigger than the others.
 
-                                  onPressed: (context) {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                UpdateNotePage(
-                                                    content: state
-                                                        .listNotes![index]
-                                                        .content,
-                                                    id: state
-                                                        .listNotes![index].id,
-                                                    title: state
-                                                        .listNotes![index]
-                                                        .title)));
-                                  },
-                                  backgroundColor: const Color(0xFF7BC043),
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.edit,
-                                  label: 'Edit',
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10)),
+                // const SizedBox(height: 4),
+                // Text(' Hello', style: textTheme.headline6),
+                // const SizedBox(height: 4),
+                // Text(user.name ?? '', style: textTheme.headline5),
+                // const SizedBox(
+                //   height: 20,
+                // ),
+                BlocBuilder<HomeBloc, HomeState>(
+                  buildWhen: (previous, current) =>
+                      previous.listNotes?.length != current.listNotes?.length,
+                  builder: (context, state) {
+                    if (state.listNotes?.length != null) {
+                      if (state.listNotes!.length == 0) {
+                        return SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height:
+                                (MediaQuery.of(context).size.height < 800.00)
+                                    ? 350
+                                    : MediaQuery.of(context).size.height * 0.7,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/images/ic_center_bg.png',
                                 ),
-                                SlidableAction(
-                                  onPressed: (context) {
-                                    context.read<HomeBloc>().add(Delete(
-                                        id: state.listNotes![index].id,
-                                        content:
-                                            state.listNotes![index].content,
-                                        title: state.listNotes![index].title,
-                                        timeCreate: state
-                                            .listNotes![index].timeCreate));
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const BuildFirstScreen()));
-                                  },
-                                  backgroundColor: const Color(0xFF0392CF),
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.delete,
-                                  label: 'Delete',
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10)),
-                                ),
+                                const Text(
+                                  'Create your first note !',
+                                  style: TextStyle(fontSize: 20),
+                                )
                               ],
+                            ));
+                      } else {
+                        return SizedBox(
+                          height: (MediaQuery.of(context).size.height < 800.00)
+                              ? 350
+                              : MediaQuery.of(context).size.height * 0.74,
+                          child: ListView.separated(
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(
+                              height: 20,
                             ),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                  color: titleColor[index % 6],
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(10))),
-                              padding: const EdgeInsets.all(25),
-                              child: Text(
-                                '${state.listNotes?[index].title}',
-                                style: const TextStyle(
-                                    fontSize: 30, color: Colors.black),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                } else {
-                  return LoadingScreen(
-                    height: (MediaQuery.of(context).size.height < 900.00)
-                        ? 350
-                        : MediaQuery.of(context).size.height * 0.5,
-                  );
-                }
-              },
-            )
-          ],
+                            padding: const EdgeInsets.all(20),
+                            addAutomaticKeepAlives: true,
+                            itemCount: state.listNotes!.length,
+                            itemBuilder: (context, index) {
+                              return Slidable(
+                                endActionPane: ActionPane(
+                                  motion: const DrawerMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      // An action can be bigger than the others.
+
+                                      onPressed: (context) {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    UpdateNotePage(
+                                                        content: state
+                                                            .listNotes?[index]
+                                                            .content,
+                                                        id: state
+                                                            .listNotes![index]
+                                                            .id,
+                                                        title: state
+                                                            .listNotes?[index]
+                                                            .title)));
+                                      },
+                                      backgroundColor: const Color(0xFF7BC043),
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.edit,
+                                      label: 'Edit',
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
+                                    ),
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        context.read<HomeBloc>().add(Delete(
+                                            id: state.listNotes![index].id,
+                                            content:
+                                                state.listNotes![index].content,
+                                            title:
+                                                state.listNotes![index].title,
+                                            timeCreate: state
+                                                .listNotes![index].timeCreate));
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const HomePage()));
+                                      },
+                                      backgroundColor: const Color(0xFF0392CF),
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.delete,
+                                      label: 'Delete',
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10)),
+                                    ),
+                                  ],
+                                ),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                      color: titleColor[index % 6],
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(10))),
+                                  padding: const EdgeInsets.all(25),
+                                  child: Text(
+                                    '${state.listNotes?[index].title}',
+                                    style: const TextStyle(
+                                        fontSize: 30, color: Colors.black),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    } else {
+                      return LoadingScreen(
+                        height: (MediaQuery.of(context).size.height < 900.00)
+                            ? 350
+                            : MediaQuery.of(context).size.height * 0.5,
+                      );
+                    }
+                  },
+                )
+              ],
+            );
+          },
         ),
       ),
     );

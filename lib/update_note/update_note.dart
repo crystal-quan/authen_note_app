@@ -168,8 +168,8 @@ class _UpdateNoteViewState extends State<UpdateNoteView> {
       context
           .read<UpdateBloc>()
           .add(ClickUpdate(id: widget.id, timeCreate: widget.timeCreate));
-      Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const BuildFirstScreen()));
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const HomePage()));
     }
   }
 }

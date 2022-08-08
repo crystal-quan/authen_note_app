@@ -29,7 +29,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Emitter<AppState> emit,
   ) async {
     final currentUser = await ggAuthenticationRepository.getUser();
-    final statusApp = (currentUser?.name == null)
+    final statusApp = (currentUser?.email == null)
         ? AppStatus.unauthenticated
         : AppStatus.authenticated;
 
@@ -40,6 +40,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   void _onLogoutRequested(
       AppLogoutRequested event, Emitter<AppState> emit) async {
     await ggAuthenticationRepository.logOut();
-    final box = await Hive.box<Note>('notes').clear();
+    emit(state.copyWith(user: null, status: AppStatus.unauthenticated));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:authen_note_app/app/app.dart';
 import 'package:authen_note_app/firebase_options.dart';
 import 'package:authen_note_app/model/note_model.dart';
+import 'package:authen_note_app/model/user.dart';
 import 'package:authen_note_app/repository/google_authenRepository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -20,9 +21,9 @@ Future<void> main() {
 
       await Hive.initFlutter();
       Hive.registerAdapter(NoteAdapter());
-
       await Hive.openBox<Note>('notes');
-
+      Hive.registerAdapter(UserAdapter());
+      await Hive.openBox<User>('users');
       final authenticationRepository = GoogleAuthenRepository(
           firebaseAuth: auth.FirebaseAuth.instance,
           googleSignIn: GoogleSignIn());

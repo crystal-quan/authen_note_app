@@ -1,4 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:authen_note_app/google_login_page/google_login_screen.dart';
+import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/repository/google_authenRepository.dart';
 // import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flow_builder/flow_builder.dart';
@@ -41,38 +43,45 @@ class _AppViewState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      highContrastTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
       home: AnimatedSplashScreen(
           duration: 0,
           splash: Icons.note_add,
-          nextScreen: const BuildFirstScreen(),
+          nextScreen: const HomePage(),
           splashTransition: SplashTransition.fadeTransition,
           backgroundColor: Colors.blue),
     );
   }
 }
 
-class BuildFirstScreen extends StatefulWidget {
-  const BuildFirstScreen({super.key});
+// class BuildFirstScreen extends StatefulWidget {
+//   const BuildFirstScreen({super.key});
 
-  @override
-  State<BuildFirstScreen> createState() => _BuildFirstScreenState();
-}
+//   @override
+//   State<BuildFirstScreen> createState() => _BuildFirstScreenState();
+// }
 
-class _BuildFirstScreenState extends State<BuildFirstScreen> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    context.read<AppBloc>().add(CheckLogin());
-  }
+// class _BuildFirstScreenState extends State<BuildFirstScreen> {
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
 
-  @override
-  Widget build(BuildContext context) {
-    return FlowBuilder<AppStatus>(
-      state: context.select((AppBloc bloc) => bloc.state.status),
-      onGeneratePages: onGenerateAppViewPages,
-    );
-  }
-}
+//     context.read<AppBloc>().add(CheckLogin());
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocBuilder<AppBloc, AppState>(
+//         buildWhen: (previous, current) => previous.status != previous.status,
+//         builder: (context, state) {
+//           if (state.status == AppStatus.authenticated) {
+//             return const HomePage();
+//           } else {
+//             return const GoogleLoginPage();
+//           }
+//         });
+//   }
+// }

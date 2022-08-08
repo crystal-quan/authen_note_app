@@ -11,17 +11,19 @@ abstract class HomeEvent extends Equatable {
 
 class GetNote extends HomeEvent {}
 
-class AutoAsync extends HomeEvent{}
-
+class AutoAsync extends HomeEvent {}
 
 class Delete extends HomeEvent {
-   String id;
-   String? title;
-   String? content;
-   DateTime? timeCreate;
+  String id;
+  String? title;
+  String? content;
+  DateTime? timeCreate;
 
-
-  Delete({required this.id,this.title,this.content,this.timeCreate});
+  Delete({required this.id, this.title, this.content, this.timeCreate});
   @override
   List<Object> get props => [id];
 }
+
+class LoginWithGoogle extends HomeEvent {}
+
+class LogOut extends HomeEvent {}

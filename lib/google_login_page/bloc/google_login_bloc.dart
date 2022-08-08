@@ -4,7 +4,6 @@ import 'dart:developer';
 import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/google_authenRepository.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
-// import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
@@ -15,7 +14,7 @@ part 'google_login_state.dart';
 class GoogleLoginBloc extends Bloc<GoogleLoginEvent, GoogleLoginState> {
   GoogleLoginBloc(
       {required this.authenticationRepository, required this.noteRepo})
-      : super(GoogleLoginState()) {
+      : super(const GoogleLoginState()) {
     on<LoginWithGoogle>(logInWithGoogle);
     on<GetNoteOffline>(_onGetNoteOffline);
   }
@@ -40,7 +39,7 @@ class GoogleLoginBloc extends Bloc<GoogleLoginEvent, GoogleLoginState> {
 
   Future<void> _onGetNoteOffline(
       GetNoteOffline event, Emitter<GoogleLoginState> emit) async {
-    late List<Note?>? result;
+    late List<Note>? result;
     try {
       final noteOffline = await noteRepo.getNote();
       print('quanquan - $noteOffline');
