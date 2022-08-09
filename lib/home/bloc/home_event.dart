@@ -33,9 +33,8 @@ class CheckLogin extends HomeEvent {}
 class AddNote extends HomeEvent {
   String? title;
   String? content;
-  List<Note> list;
 
-  AddNote({this.title, this.content, required this.list});
+  AddNote({this.title, this.content});
 }
 
 class UpdateNote extends HomeEvent {

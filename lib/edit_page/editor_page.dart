@@ -1,21 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:authen_note_app/app/app.dart';
 import 'package:authen_note_app/edit_page/bloc/editor_bloc.dart';
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
-
-import 'package:authen_note_app/home/view/home_page.dart';
 import 'package:authen_note_app/model/note_model.dart';
-import 'package:authen_note_app/repository/note_repository.dart';
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/widget/custom_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 class EditorView extends StatelessWidget {
   final List<Note> list;
@@ -129,10 +120,9 @@ class EditorView extends StatelessWidget {
     if (result) {
       FocusScope.of(context).unfocus();
       homeBloc.add(AddNote(
-          content: editorBloc.state.content,
-          title: editorBloc.state.title,
-          list: list));
-      print('quanbv check list- ${list}');
+        content: editorBloc.state.content,
+        title: editorBloc.state.title,
+      ));
       Navigator.pop(context);
     }
   }

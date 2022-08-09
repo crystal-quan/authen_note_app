@@ -4,21 +4,17 @@ import 'package:authen_note_app/edit_page/editor_page.dart';
 import 'package:authen_note_app/home/bloc/home_bloc.dart';
 import 'package:authen_note_app/model/note_model.dart';
 import 'package:authen_note_app/repository/note_repository.dart';
-import 'package:authen_note_app/widget/custom_button.dart';
 import 'package:authen_note_app/widget/loading_screen.dart';
 
 import 'package:authen_note_app/theme/color.dart';
 import 'package:authen_note_app/update_note/update_note.dart';
 import 'package:authen_note_app/widget/floatingActionButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 
-import '../../app/app.dart';
 import '../widgets/avatar.dart';
 
 class HomeScreen extends StatefulWidget {

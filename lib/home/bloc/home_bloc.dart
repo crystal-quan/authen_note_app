@@ -34,7 +34,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GoogleAuthenRepository authenticationRepository =
       GoogleAuthenRepository(
           firebaseAuth: fire_auth.FirebaseAuth.instance,
-          googleSignIn: GoogleSignIn());
+          googleSignIn: GoogleSignIn.standard());
 
   void _onLogoutRequested(
       AppLogoutRequested event, Emitter<HomeState> emit) async {

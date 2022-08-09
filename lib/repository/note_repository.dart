@@ -14,17 +14,24 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class NoteRepository {
-  NoteRepository({
-    required this.firestore,
-    required this.box,
-  });
+  NoteRepository(
+      {auth.FirebaseAuth? firebaseAuth,
+      Box<Note>? box,
+      FirebaseFirestore? firestore,
+      GoogleAuthenRepository? googleAuthenRepository})
+      : _googleAuthenRepository = googleAuthenRepository ??
+            GoogleAuthenRepository(
+                firebaseAuth: auth.FirebaseAuth.instance,
+                googleSignIn: GoogleSignIn.standard()),
+        _firebaseAuth = firebaseAuth ?? auth.FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance,
+        _box = box ?? Hive.box<Note>('notes');
 
-  late auth.FirebaseAuth firebaseAuth;
+  late auth.FirebaseAuth _firebaseAuth;
   late Note note;
-  late Box<Note> box;
-  late FirebaseFirestore firestore;
-  final GoogleAuthenRepository googleAuthenRepository = GoogleAuthenRepository(
-      firebaseAuth: auth.FirebaseAuth.instance, googleSignIn: GoogleSignIn());
+  late Box<Note> _box;
+  late FirebaseFirestore _firestore;
+  final GoogleAuthenRepository _googleAuthenRepository;
 
   Future<String> getRandomId() async {
     try {
@@ -46,7 +53,7 @@ class NoteRepository {
 
   Future<Note> addNote(String title, String content) async {
     bool result = await InternetConnectionChecker().hasConnection;
-    final currentUser = firebaseAuth.currentUser;
+    final currentUser = _firebaseAuth.currentUser;
     late bool addnote;
     String randomId = await getRandomId();
     Note note = Note(
@@ -75,9 +82,9 @@ class NoteRepository {
   Future<bool> addToRemote(String id, Note note) async {
     late bool addToremote;
     try {
-      final currentUser = firebaseAuth.currentUser;
+      final currentUser = _firebaseAuth.currentUser;
       if (currentUser?.email != null) {
-        await firestore
+        await _firestore
             .collection("users")
             .doc("${currentUser?.email}")
             .collection('notes')
@@ -104,7 +111,7 @@ class NoteRepository {
   Future<bool> addToLocal(String id, Note note) async {
     late bool addToLocal;
     try {
-      await box.put(id, note);
+      await _box.put(id, note);
       addToLocal = true;
       return addToLocal;
     } catch (e) {
@@ -141,9 +148,9 @@ class NoteRepository {
   Future<bool> deleteFromRemote(Note note) async {
     late bool deleteComple;
     try {
-      final currentUser = firebaseAuth.currentUser;
+      final currentUser = _firebaseAuth.currentUser;
       if (currentUser?.email != null) {
-        await firestore
+        await _firestore
             .collection("users")
             .doc("${currentUser?.email}")
             .collection('notes')
@@ -167,7 +174,7 @@ class NoteRepository {
   Future<bool> deleteFromLocal(Note note) async {
     late bool deleteComple;
     try {
-      await box.put(note.id, note);
+      await _box.put(note.id, note);
       deleteComple = true;
       return deleteComple;
     } catch (e, stack) {
@@ -194,9 +201,9 @@ class NoteRepository {
   Future<bool> updateToRemote(Note note) async {
     late bool updateToRemote;
     try {
-      final currentUser = firebaseAuth.currentUser;
+      final currentUser = _firebaseAuth.currentUser;
       if (currentUser?.email != null) {
-        await firestore
+        await _firestore
             .collection("users")
             .doc("${currentUser?.email}")
             .collection('notes')
@@ -218,7 +225,7 @@ class NoteRepository {
   Future<bool> updateToLocal(Note note) async {
     late bool updateToLocal;
     try {
-      await box.put(note.id, note);
+      await _box.put(note.id, note);
       updateToLocal = true;
       return updateToLocal;
     } catch (e) {
@@ -230,10 +237,10 @@ class NoteRepository {
   Future<List<Note>?> getNote() async {
     late List<Note>? listNotes;
     try {
-      final listKey = box.keys.toList();
+      final listKey = _box.keys.toList();
       final listkeytoString = listKey.map((e) => e.toString()).toList();
       listNotes = listkeytoString.map((e) {
-        final hivenotte = box.get(e);
+        final hivenotte = _box.get(e);
         return hivenotte ?? Note();
       }).toList();
       print('quanbv check get offline $listNotes');
@@ -247,13 +254,13 @@ class NoteRepository {
   Future<List<Note>> getFromRemote() async {
     bool result = await InternetConnectionChecker().hasConnection;
     print('quanbv check - $result');
-    final currentUser = await googleAuthenRepository.getUser();
+    final currentUser = await _googleAuthenRepository.getUser();
     print('quanbv check mail - ${currentUser?.email}');
     late List<Note>? remoteList;
     if (result) {
       try {
         if (currentUser?.email != null) {
-          final remoteData = await firestore
+          final remoteData = await _firestore
               .collection('users')
               .doc('${currentUser?.email}')
               .collection('notes')

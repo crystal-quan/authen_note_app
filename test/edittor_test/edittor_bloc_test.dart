@@ -19,7 +19,6 @@ void main() {
     () {
       now = DateTime.now();
       noteRepository = MockNoteRepository();
-      // editorBloc = EditorBloc(noteRepository: noteRepository);
     },
   );
 
@@ -32,44 +31,31 @@ void main() {
   );
 
   blocTest<EditorBloc, EditorState>(
-    'Edit Title',
+    'Edit Title return my_title',
     build: () => EditorBloc(),
-    act: (bloc) => bloc.add(EditorTitle('title')),
-    expect: () => <EditorState>[EditorState(title: 'title')],
+    act: (bloc) => bloc.add(EditorTitle('my_title')),
+    expect: () => <EditorState>[EditorState(title: 'my_title')],
   );
 
   blocTest<EditorBloc, EditorState>(
-    'Edit Content',
+    'Edit Title return not null',
     build: () => EditorBloc(),
-    act: (bloc) => bloc.add(EditorTitle('Content')),
-    expect: () => <EditorState>[EditorState(title: 'Content')],
-  );
-  blocTest<EditorBloc, EditorState>(
-    'call addNote when call event SaveNote',
-    setUp: () {
-      editorBloc = EditorBloc();
-    },
-    build: () => editorBloc,
-    act: (bloc) => bloc.add(SaveNote()),
-    verify: (_) {
-      verify(() => noteRepository.addNote('', '')).called(1);
-    },
+    act: (bloc) => bloc.add(EditorTitle(null)),
+    expect: () => <EditorState>[EditorState(title: '')],
   );
 
   blocTest<EditorBloc, EditorState>(
-    'emits status [loading,error] when NoteRepository.addNote has error',
-    setUp: () {
-      editorBloc = EditorBloc();
-      when(() => noteRepository.addNote(any(), any()))
-          .thenThrow(Error());
-    },
-    build: () => editorBloc,
-    act: (bloc) => bloc.add(SaveNote()),
-    expect: () => <EditorState>[
-      EditorState(status: Status.loading),
-      EditorState(timeCreate: now, status: Status.loading),
-      EditorState(timeCreate: now, status: Status.error),
-    ],
+    'Edit Content return my_Content',
+    build: () => EditorBloc(),
+    act: (bloc) => bloc.add(EditorTitle('my_Content')),
+    expect: () => <EditorState>[EditorState(title: 'my_Content')],
+  );
+  blocTest<EditorBloc, EditorState>(
+    'Edit Content return not null',
+    build: () => EditorBloc(),
+    act: (bloc) => bloc.add(EditorTitle(null)),
+    expect: () => <EditorState>[EditorState(title: '')],
   );
 
   
+}
